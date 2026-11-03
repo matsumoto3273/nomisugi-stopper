@@ -179,6 +179,8 @@ function DrinkingScreen({
   const accent = over > 0 ? OVER_ACCENT : LEVEL_THEMES[level].accent;
   const waterPending = seq[filled]?.kind === 'water';
   const reachedLimit = filled >= slots.length;
+  // 枠を付ける位置：飲む前は1杯目、お水待ちはお水、それ以外は「今飲んでいる（最後にタップした）1杯」
+  const highlightIndex = filled === 0 ? 0 : waterPending ? filled : filled - 1;
 
   // 枠の外に並べる超過分
   const overItems = seq.slice(slots.length, filled).map((slot, k) => ({ slot, index: slots.length + k }));
@@ -251,7 +253,7 @@ function DrinkingScreen({
                 kind={slot.kind}
                 label={slot.kind === 'drink' ? `${slot.drinkNo}` : '水'}
                 filled={i < filled}
-                isNext={i === filled}
+                highlighted={i === highlightIndex}
                 locked={i > filled && waterPending && slot.kind === 'drink'}
                 accent={accent}
                 onPress={() => tapSlot(i)}
@@ -270,7 +272,7 @@ function DrinkingScreen({
                     kind={slot.kind}
                     label={slot.kind === 'drink' ? `+${(slot.drinkNo ?? 0) - max}` : '水'}
                     filled={index < filled}
-                    isNext={index === filled}
+                    highlighted={index === highlightIndex}
                     locked={false}
                     danger
                     accent={OVER_ACCENT}
@@ -329,7 +331,7 @@ function SlotButton({
   kind,
   label,
   filled,
-  isNext,
+  highlighted,
   locked,
   danger,
   accent,
@@ -338,7 +340,7 @@ function SlotButton({
   kind: 'drink' | 'water';
   label: string;
   filled: boolean;
-  isNext: boolean;
+  highlighted: boolean;
   locked: boolean;
   danger?: boolean;
   accent: string;
@@ -361,7 +363,7 @@ function SlotButton({
       onPress={onPress}
       style={[
         styles.slot,
-        isNext && { borderColor: kind === 'water' ? '#2196C3' : accent, backgroundColor: '#FFFFFFAA' },
+        highlighted && { borderColor: kind === 'water' ? '#2196C3' : accent, backgroundColor: '#FFFFFFAA' },
       ]}
     >
       <Animated.View style={{ transform: [{ scale }] }}>
