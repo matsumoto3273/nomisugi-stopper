@@ -212,10 +212,10 @@ function DrinkingScreen({
   if (isWaterMessage) {
     message = waters === 0 ? 'お水を頼んで、飲んだらタップ' : 'お水を飲みましょう。\n飲んだらタップ。';
   }
-  // お水の文言は各行が途中で折り返さないよう、画面幅が狭いときだけ文字を小さくする
+  // 文言の各行が途中で折り返さないよう、画面幅が狭いときだけ文字を小さくする
   const { width: screenWidth } = useWindowDimensions();
   const cardInnerWidth = Math.min(screenWidth * 0.92, 480) - 30;
-  const waterFontSize = Math.min(18, Math.floor(cardInnerWidth / Math.max(...message.split('\n').map((l) => l.length))));
+  const messageFontSize = Math.min(18, Math.floor(cardInnerWidth / Math.max(...message.split('\n').map((l) => l.length))));
 
   return (
     <View style={styles.screen}>
@@ -237,7 +237,7 @@ function DrinkingScreen({
             style={[
               styles.messageText,
               over > 0 && { color: OVER_ACCENT },
-              isWaterMessage && { fontSize: waterFontSize },
+              { fontSize: messageFontSize },
             ]}
           >
             {message}
