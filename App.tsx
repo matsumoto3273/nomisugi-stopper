@@ -663,7 +663,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   subButtonColumn: { gap: 8 },
-  addOverButton: { backgroundColor: '#D93A2E' },
+  addOverButton: { backgroundColor: '#111111' },
   subButtonText: { fontSize: 15, fontWeight: '800', color: INK },
   finishButton: {
     ...outline,
