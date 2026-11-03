@@ -24,7 +24,7 @@ import { MPLUSRounded1c_900Black } from '@expo-google-fonts/m-plus-rounded-1c';
 import { HachiMaruPop_400Regular } from '@expo-google-fonts/hachi-maru-pop';
 import { YujiSyuku_400Regular } from '@expo-google-fonts/yuji-syuku';
 import { DelaGothicOne_400Regular } from '@expo-google-fonts/dela-gothic-one';
-const PREVIEW_FONT: string | undefined = (globalThis as any).location?.search?.match(/f=(\w+)/)?.[1];
+const PREVIEW_COLOR = Number((globalThis as any).location?.search?.match(/c=(\d)/)?.[1] ?? 1) - 1;
 
 import {
   buildSlots,
@@ -128,7 +128,7 @@ function SetupScreen({ initial, onStart }: { initial: number; onStart: (max: num
           <MugIcon size={64} filled />
           <WaterIcon size={56} filled />
         </View>
-        <TitleLogo fontFamily={PREVIEW_FONT} />
+        <TitleLogo colorSet={PREVIEW_COLOR} />
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>本日の最大飲酒量</Text>
