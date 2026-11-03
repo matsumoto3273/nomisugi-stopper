@@ -33,15 +33,16 @@ export function countKind(slots: Slot[], filled: number, kind: SlotKind): number
 /**
  * 危険度レベル
  * 0: まだ0杯 / 1: 〜20% / 2: 〜40% / 3: 〜60% / 4: 〜80% / 5: 〜100%未満 / 6: 上限到達
+ * （各区切りの杯数は四捨五入）
  */
 export function getLevel(drinks: number, max: number): number {
   if (drinks <= 0) return 0;
   if (drinks >= max) return 6;
-  // 浮動小数の誤差を避けるため整数で比較
-  if (drinks * 5 <= max * 1) return 1;
-  if (drinks * 5 <= max * 2) return 2;
-  if (drinks * 5 <= max * 3) return 3;
-  if (drinks * 5 <= max * 4) return 4;
+  // 区切りの杯数は四捨五入（例: 上限8杯の20% = 1.6杯 → 2杯目までは段階1）
+  // max×k/5 の端数は .2/.4/.6/.8 のどれかなので、ちょうど .5 になることはない
+  for (let k = 1; k <= 4; k++) {
+    if (drinks <= Math.round((max * k) / 5)) return k;
+  }
   return 5;
 }
 
