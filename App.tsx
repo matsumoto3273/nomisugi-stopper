@@ -107,7 +107,7 @@ function SetupScreen({ initial, onStart }: { initial: number; onStart: (max: num
         <View style={styles.card}>
           <Text style={styles.cardTitle}>本日の最大飲酒量</Text>
           <Text style={styles.cardNote}>
-            これ以上飲むと記憶があいまいになる、{'\n'}二日酔いになる…という目安の杯数は？{'\n'}（{MIN_DRINKS}〜{MAX_DRINKS}杯）
+            これ以上飲むと記憶があいまいになる、{'\n'}二日酔いになる…という目安の杯数は？
           </Text>
 
           <View style={styles.stepper}>
@@ -120,7 +120,7 @@ function SetupScreen({ initial, onStart }: { initial: number; onStart: (max: num
           </View>
 
           <View style={styles.chips}>
-            {[3, 5, 10, 15, 20, 25, 30].map((n) => (
+            {[3, 5, 8, 10, 15, 20].map((n) => (
               <Pressable
                 key={n}
                 onPress={() => setMax(n)}
