@@ -283,8 +283,8 @@ function DrinkingScreen({
           <View style={styles.subButtonColumn}>
             {/* 上限到達後だけ、目立たないように「1つ戻す」の上に出す */}
             {reachedLimit && (
-              <Pressable onPress={addOver} style={styles.subButton}>
-                <Text style={styles.subButtonText}>追加する</Text>
+              <Pressable onPress={addOver} style={[styles.subButton, styles.addOverButton]}>
+                <Text style={[styles.subButtonText, { color: '#FFFFFF' }]}>追加する</Text>
               </Pressable>
             )}
             <Pressable
@@ -396,9 +396,14 @@ function DoneScreen({ max, filled, onRestart }: { max: number; filled: number; o
         <Text style={styles.appTitle}>お疲れ様でした</Text>
         <View style={styles.card}>
           {over > 0 ? (
-            <Text style={styles.doneMain}>
-              今日は{'\n'}<Text style={{ color: OVER_ACCENT }}>{over}杯オーバー</Text>でした。{'\n'}次は約束を{'\n'}守りましょう。
-            </Text>
+            <View style={{ alignItems: 'center' }}>
+              <Text style={styles.doneMain}>
+                今日は{'\n'}<Text style={{ color: OVER_ACCENT }}>{over}杯オーバー</Text>でした。
+              </Text>
+              <Text style={[styles.doneMain, { fontSize: 20 }]} numberOfLines={1}>
+                次は約束を守りましょう。
+              </Text>
+            </View>
           ) : (
             <Text style={styles.doneMain}>自分との約束を{'\n'}守れましたね。</Text>
           )}
@@ -658,6 +663,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   subButtonColumn: { gap: 8 },
+  addOverButton: { backgroundColor: '#D93A2E' },
   subButtonText: { fontSize: 15, fontWeight: '800', color: INK },
   finishButton: {
     ...outline,
