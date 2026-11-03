@@ -16,7 +16,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { MugIcon, WaterIcon } from './src/Icons';
 import { WoodBackground } from './src/WoodBackground';
-import { TitleLogo } from './src/TitleLogo';
+import { HeadingLogo, TitleLogo } from './src/TitleLogo';
 import { useFonts } from 'expo-font';
 import { MPLUSRounded1c_900Black } from '@expo-google-fonts/m-plus-rounded-1c/900Black';
 
@@ -210,7 +210,7 @@ function DrinkingScreen({
   // お水：1回目は頼んでもらう。2回目以降は「飲む」だけ促す（残っていれば飲む、なければ頼んで飲む）
   const isWaterMessage = over === 0 && waterPending;
   if (isWaterMessage) {
-    message = waters === 0 ? 'お水を頼んで、飲んだらタップ' : 'お水を飲みましょう。\n飲んだらタップ。';
+    message = waters === 0 ? 'お水を頼んで、飲んだらタップ。' : 'お水を飲みましょう。\n飲んだらタップ。';
   }
   // 文言の各行が途中で折り返さないよう、画面幅が狭いときだけ文字を小さくする
   const { width: screenWidth } = useWindowDimensions();
@@ -378,7 +378,7 @@ function DoneScreen({ max, filled, onRestart }: { max: number; filled: number; o
       <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.setupContent}>
         <Text style={styles.doneEmoji}>{over > 0 ? '🌙' : '🎉'}</Text>
-        <Text style={styles.appTitle}>お疲れ様でした</Text>
+        <HeadingLogo text="お疲れ様でした" />
         <View style={styles.card}>
           {over > 0 ? (
             <View style={{ alignItems: 'center' }}>
@@ -478,15 +478,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   logoRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 4 },
-  appTitle: {
-    fontSize: 30,
-    fontWeight: '900',
-    color: '#FFF8E7',
-    letterSpacing: 1,
-    textShadowColor: INK,
-    textShadowOffset: { width: 0, height: 3 },
-    textShadowRadius: 0,
-  },
   board: {
     ...outline,
     ...popShadow,

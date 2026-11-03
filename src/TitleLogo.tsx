@@ -48,6 +48,19 @@ function OutlinedText({
   );
 }
 
+/** 終了画面の見出しなど：冒頭のタイトルと同じ書体・フチ・影（黄色） */
+export function HeadingLogo({ text, fontSize = 30 }: { text: string; fontSize?: number }) {
+  return (
+    <OutlinedText
+      text={text}
+      style={{ fontFamily: 'MPLUSRounded1c_900Black', fontSize, color: '#FFD23F' }}
+      outline={INK}
+      width={3.5}
+      shadow={{ color: INK, dy: 4 }}
+    />
+  );
+}
+
 /** 冒頭画面のタイトル：太い丸文字に焦げ茶のフチと影。「飲みすぎ」黄 ×「ストッパー」赤 */
 export function TitleLogo() {
   return (
