@@ -279,21 +279,22 @@ function DrinkingScreen({
         </ScrollView>
 
         {/* 下部ボタン */}
-        {reachedLimit && (
-          <View style={styles.overButtonRow}>
-            <Pressable onPress={addOver} style={styles.overButton}>
-              <Text style={styles.overButtonText}>追加する</Text>
+        <View style={styles.footer}>
+          <View style={styles.subButtonColumn}>
+            {/* 上限到達後だけ、目立たないように「1つ戻す」の上に出す */}
+            {reachedLimit && (
+              <Pressable onPress={addOver} style={styles.subButton}>
+                <Text style={styles.subButtonText}>追加する</Text>
+              </Pressable>
+            )}
+            <Pressable
+              onPress={undo}
+              disabled={filled === 0}
+              style={[styles.subButton, filled === 0 && { opacity: 0.4 }]}
+            >
+              <Text style={styles.subButtonText}>1つ戻す</Text>
             </Pressable>
           </View>
-        )}
-        <View style={styles.footer}>
-          <Pressable
-            onPress={undo}
-            disabled={filled === 0}
-            style={[styles.subButton, filled === 0 && { opacity: 0.4 }]}
-          >
-            <Text style={styles.subButtonText}>1つ戻す</Text>
-          </Pressable>
           <Pressable onPress={() => setFinishModal(true)} style={[styles.finishButton, { backgroundColor: accent }]}>
             <Text style={styles.finishButtonText}>飲み会終了</Text>
           </Pressable>
@@ -637,18 +638,9 @@ const styles = StyleSheet.create({
     borderColor: '#E0483B',
     width: '100%',
   },
-  overButtonRow: { alignItems: 'center', paddingTop: 4 },
-  overButton: {
-    borderWidth: 2.5,
-    borderColor: '#3B2A20',
-    borderRadius: 999,
-    paddingVertical: 6,
-    paddingHorizontal: 22,
-    backgroundColor: '#FFE3DE',
-  },
-  overButtonText: { fontSize: 14, fontWeight: '900', color: OVER_ACCENT },
   footer: {
     flexDirection: 'row',
+    alignItems: 'flex-end',
     gap: 12,
     paddingHorizontal: 16,
     paddingTop: 8,
@@ -665,6 +657,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
   },
+  subButtonColumn: { gap: 8 },
   subButtonText: { fontSize: 15, fontWeight: '800', color: INK },
   finishButton: {
     ...outline,
