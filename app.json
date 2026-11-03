@@ -32,6 +32,9 @@
     },
     "experiments": {
       "baseUrl": "/nomisugi-stopper"
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
