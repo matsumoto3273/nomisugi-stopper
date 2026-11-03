@@ -13,6 +13,7 @@ import {
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { MugIcon, WaterIcon } from './src/Icons';
+import { WoodBackground } from './src/WoodBackground';
 import {
   buildSlots,
   countKind,
@@ -63,7 +64,7 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       {state.phase === 'setup' && (
         <SetupScreen
           initial={state.max}
@@ -96,7 +97,9 @@ function SetupScreen({ initial, onStart }: { initial: number; onStart: (max: num
   const change = (d: number) => setMax((m) => Math.min(MAX_DRINKS, Math.max(MIN_DRINKS, m + d)));
 
   return (
-    <SafeAreaView style={[styles.screen, { backgroundColor: LEVEL_THEMES[0].bg }]}>
+    <View style={styles.screen}>
+      <WoodBackground />
+      <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.setupContent}>
         <View style={styles.logoRow}>
           <MugIcon size={64} filled />
@@ -139,7 +142,8 @@ function SetupScreen({ initial, onStart }: { initial: number; onStart: (max: num
 
         <BigButton label="飲み会スタート！" color={LEVEL_THEMES[0].accent} onPress={() => onStart(max)} />
       </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
 
@@ -167,16 +171,6 @@ function DrinkingScreen({
   const [waterModal, setWaterModal] = useState(false);
   const [finishModal, setFinishModal] = useState(false);
 
-  // 背景色をなめらかに変化させる
-  const levelAnim = useRef(new Animated.Value(level)).current;
-  useEffect(() => {
-    Animated.timing(levelAnim, { toValue: level, duration: 600, useNativeDriver: false }).start();
-  }, [level, levelAnim]);
-  const bg = levelAnim.interpolate({
-    inputRange: LEVEL_THEMES.map((_, i) => i),
-    outputRange: LEVEL_THEMES.map((t) => t.bg),
-  });
-
   const tapSlot = (index: number) => {
     if (index < filled) return;
     if (index > filled) {
@@ -194,12 +188,13 @@ function DrinkingScreen({
   };
 
   return (
-    <Animated.View style={[styles.screen, { backgroundColor: bg }]}>
-      <SafeAreaView style={{ flex: 1 }}>
+    <View style={styles.screen}>
+      <WoodBackground />
+      <SafeAreaView style={styles.screen}>
         {/* ヘッダー */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>飲みすぎストッパー</Text>
-          <View style={styles.counterRow}>
+          <View style={[styles.counterRow, styles.board]}>
             <Text style={[styles.counterBig, { color: theme.accent }]}>{drinks}</Text>
             <Text style={styles.counterSmall}> / {max} 杯</Text>
             <Text style={styles.counterWater}>　💧 {waters}</Text>
@@ -214,7 +209,8 @@ function DrinkingScreen({
         </View>
 
         {/* ジョッキ一覧 */}
-        <ScrollView contentContainerStyle={styles.grid}>
+        <ScrollView contentContainerStyle={styles.gridWrap}>
+          <View style={[styles.board, styles.grid]}>
           {slots.map((slot, i) => (
             <SlotButton
               key={i}
@@ -227,6 +223,7 @@ function DrinkingScreen({
               onPress={() => tapSlot(i)}
             />
           ))}
+          </View>
         </ScrollView>
 
         {/* 下部ボタン */}
@@ -274,7 +271,7 @@ function DrinkingScreen({
           <Text style={styles.linkText}>まだ続ける</Text>
         </Pressable>
       </PopupModal>
-    </Animated.View>
+    </View>
   );
 }
 
@@ -331,7 +328,9 @@ function DoneScreen({ max, filled, onRestart }: { max: number; filled: number; o
   const waters = countKind(slots, filled, 'water');
 
   return (
-    <SafeAreaView style={[styles.screen, { backgroundColor: LEVEL_THEMES[2].bg }]}>
+    <View style={styles.screen}>
+      <WoodBackground />
+      <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.setupContent}>
         <Text style={styles.doneEmoji}>🎉</Text>
         <Text style={styles.appTitle}>お疲れ様でした</Text>
@@ -357,7 +356,8 @@ function DoneScreen({ max, filled, onRestart }: { max: number; filled: number; o
         </View>
         <BigButton label="最初の画面に戻る" color={LEVEL_THEMES[2].accent} onPress={onRestart} />
       </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
 
@@ -428,7 +428,21 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   logoRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 4 },
-  appTitle: { fontSize: 30, fontWeight: '900', color: INK, letterSpacing: 1 },
+  appTitle: {
+    fontSize: 30,
+    fontWeight: '900',
+    color: '#FFF8E7',
+    letterSpacing: 1,
+    textShadowColor: INK,
+    textShadowOffset: { width: 0, height: 3 },
+    textShadowRadius: 0,
+  },
+  board: {
+    ...outline,
+    ...popShadow,
+    backgroundColor: '#FFF8E7',
+    borderRadius: 18,
+  },
   card: {
     ...outline,
     ...popShadow,
@@ -478,16 +492,24 @@ const styles = StyleSheet.create({
   bigButtonText: { fontSize: 20, fontWeight: '900', color: '#FFFFFF', letterSpacing: 1 },
 
   header: { alignItems: 'center', paddingTop: 12, paddingHorizontal: 16 },
-  headerTitle: { fontSize: 14, fontWeight: '800', color: '#5C4B40' },
-  counterRow: { flexDirection: 'row', alignItems: 'baseline' },
+  headerTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#FFF8E7',
+    marginBottom: 6,
+    textShadowColor: INK,
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 0,
+  },
+  counterRow: { flexDirection: 'row', alignItems: 'baseline', paddingHorizontal: 22, paddingVertical: 2 },
   counterBig: { fontSize: 52, fontWeight: '900' },
   counterSmall: { fontSize: 22, fontWeight: '800', color: INK },
   counterWater: { fontSize: 18, fontWeight: '800', color: '#2196C3' },
   messageCard: {
     ...popShadow,
     marginHorizontal: 16,
-    marginTop: 4,
-    marginBottom: 8,
+    marginTop: 10,
+    marginBottom: 4,
     backgroundColor: '#FFFFFF',
     borderWidth: 3,
     borderRadius: 18,
@@ -500,13 +522,14 @@ const styles = StyleSheet.create({
     maxWidth: 480,
   },
   messageText: { fontSize: 18, fontWeight: '800', color: INK, textAlign: 'center', lineHeight: 26 },
+  gridWrap: { padding: 12, paddingBottom: 24 },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     gap: 6,
-    padding: 12,
-    paddingBottom: 24,
+    padding: 10,
+    width: '100%',
     maxWidth: 480,
     alignSelf: 'center',
   },

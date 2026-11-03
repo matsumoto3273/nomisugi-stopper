@@ -26,8 +26,8 @@
       "name": "飲みすぎストッパー",
       "shortName": "飲みすぎストッパー",
       "lang": "ja",
-      "themeColor": "#DFF4FB",
-      "backgroundColor": "#DFF4FB",
+      "themeColor": "#B97E49",
+      "backgroundColor": "#B97E49",
       "display": "standalone"
     },
     "experiments": {

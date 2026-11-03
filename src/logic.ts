@@ -45,14 +45,14 @@ export const LEVEL_MESSAGES: string[] = [
   '今日の上限に到達しました。\nここで終了しましょう！',
 ];
 
-export type Theme = { bg: string; accent: string; card: string };
+export type Theme = { accent: string };
 
 export const LEVEL_THEMES: Theme[] = [
-  { bg: '#DFF4FB', accent: '#2196C3', card: '#FFFFFF' }, // 水色
-  { bg: '#DFF4FB', accent: '#2196C3', card: '#FFFFFF' }, // 水色
-  { bg: '#E3F5D8', accent: '#3E9B3A', card: '#FFFFFF' }, // 薄緑
-  { bg: '#FFF4C4', accent: '#D49A00', card: '#FFFFFF' }, // 黄色
-  { bg: '#FFDDB8', accent: '#E8701A', card: '#FFFFFF' }, // オレンジ
-  { bg: '#FFC9C2', accent: '#D93A2E', card: '#FFFFFF' }, // 赤
-  { bg: '#FFB0A6', accent: '#B71C1C', card: '#FFFFFF' }, // 濃い赤
+  { accent: '#2196C3' }, // 水色
+  { accent: '#2196C3' }, // 水色
+  { accent: '#3E9B3A' }, // 薄緑
+  { accent: '#D49A00' }, // 黄色
+  { accent: '#E8701A' }, // オレンジ
+  { accent: '#D93A2E' }, // 赤
+  { accent: '#B71C1C' }, // 濃い赤
 ];
