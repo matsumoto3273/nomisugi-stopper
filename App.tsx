@@ -173,8 +173,8 @@ function DrinkingScreen({
 }) {
   // 上限までの並び（枠の中に表示する分）
   const slots = useMemo(() => buildSlots(max), [max]);
-  // 上限を超えた分も含めた並び（余裕を持って長めに作る）
-  const seq = useMemo(() => buildSequence(max + filled + 3), [max, filled]);
+  // 超過分も含めた並び（超過分はお酒のみ）
+  const seq = useMemo(() => buildSequence(max, Math.max(0, filled - slots.length)), [max, filled, slots.length]);
   const drinks = countKind(seq, filled, 'drink');
   const waters = countKind(seq, filled, 'water');
   const over = Math.max(0, drinks - max);
@@ -183,28 +183,12 @@ function DrinkingScreen({
   const waterPending = seq[filled]?.kind === 'water';
   const reachedLimit = filled >= slots.length;
 
+  // 枠の外に並べる超過分
+  const overItems = seq.slice(slots.length, filled).map((slot, k) => ({ slot, index: slots.length + k }));
+
   const [waterModal, setWaterModal] = useState(false);
-  // 「それでも追加する」を押したか（上限ちょうどで止めている間は、超過枠を出さない）
-  const [overStarted, setOverStarted] = useState(over > 0);
-  useEffect(() => {
-    if (!reachedLimit) setOverStarted(false);
-  }, [reachedLimit]);
-  const showPendingWater = reachedLimit && waterPending && (over > 0 || overStarted);
-
-  // 枠の外に並べる超過分（埋めた分＋未入力のお水）
-  const overItems = seq
-    .slice(slots.length, filled + (showPendingWater ? 1 : 0))
-    .map((slot, k) => ({ slot, index: slots.length + k }));
-
   const [finishModal, setFinishModal] = useState(false);
   const scrollRef = useRef<ScrollViewInstance>(null);
-
-  const fillNext = () => {
-    const nextFilled = filled + 1;
-    onChangeFilled(nextFilled);
-    // 上限ちょうどで止めた場合は、水アラートは「それでも追加する」を押すまで出さない
-    if (seq[nextFilled]?.kind === 'water' && nextFilled < slots.length) setWaterModal(true);
-  };
 
   const tapSlot = (index: number) => {
     if (index < filled) return;
@@ -213,20 +197,13 @@ function DrinkingScreen({
       if (waterPending) setWaterModal(true);
       return;
     }
-    fillNext();
-  };
-
-  // 上限を超えて追加する
-  const addOver = () => {
-    setOverStarted(true);
-    if (waterPending) {
-      setWaterModal(true);
-      return;
-    }
     const nextFilled = filled + 1;
     onChangeFilled(nextFilled);
     if (seq[nextFilled]?.kind === 'water') setWaterModal(true);
   };
+
+  // 上限を超えて追加する（水ロックなし）
+  const addOver = () => onChangeFilled(filled + 1);
 
   useEffect(() => {
     if (overItems.length > 0) setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 50);
@@ -238,11 +215,7 @@ function DrinkingScreen({
 
   let message = LEVEL_MESSAGES[level];
   if (over > 0) message = getOverMessage(over);
-  // 超過中は超過の文言を優先し、お水の案内は下に小さく出す
-  const overWaterNote = over > 0 && waterPending;
-  if (waterPending && !overWaterNote && (!reachedLimit || showPendingWater)) {
-    message = 'お水タイムです。\nお水を頼んだらコップをタップ！';
-  }
+  else if (waterPending) message = 'お水タイムです。\nお水を頼んだらコップをタップ！';
 
   return (
     <View style={styles.screen}>
@@ -263,7 +236,6 @@ function DrinkingScreen({
         {/* 文言 */}
         <View style={[styles.messageCard, { borderColor: accent }, over > 0 && styles.messageCardOver]}>
           <Text style={[styles.messageText, over > 0 && { color: OVER_ACCENT }]}>{message}</Text>
-          {overWaterNote && <Text style={styles.messageSub}>💧 まずお水を頼んで、コップをタップ</Text>}
         </View>
 
         {/* ジョッキ一覧 */}
@@ -286,7 +258,7 @@ function DrinkingScreen({
           {/* 上限超過分（枠の外） */}
           {overItems.length > 0 && (
             <View style={styles.overArea}>
-              <Text style={styles.overLabel}>上限オーバー {over > 0 ? `+${over}杯` : ''}</Text>
+              <Text style={styles.overLabel}>上限オーバー +{over}杯</Text>
               <View style={styles.overGrid}>
                 {overItems.map(({ slot, index }) => (
                   <SlotButton
@@ -310,7 +282,7 @@ function DrinkingScreen({
         {reachedLimit && (
           <View style={styles.overButtonRow}>
             <Pressable onPress={addOver} style={styles.overButton}>
-              <Text style={styles.overButtonText}>それでも追加する</Text>
+              <Text style={styles.overButtonText}>追加する</Text>
             </Pressable>
           </View>
         )}
@@ -401,7 +373,7 @@ function SlotButton({
       <Animated.View style={{ transform: [{ scale }] }}>
         <Icon size={50} filled={filled} locked={locked} danger={danger} />
       </Animated.View>
-      <Text style={[styles.slotLabel, kind === 'water' && { color: '#2196C3' }, danger && styles.slotLabelOver, danger && kind === 'water' && { color: '#BDE7F7' }]}>{label}</Text>
+      <Text style={[styles.slotLabel, kind === 'water' && { color: '#2196C3' }, danger && styles.slotLabelOver]}>{label}</Text>
     </Pressable>
   );
 }
@@ -409,7 +381,7 @@ function SlotButton({
 /* ───────────── 終了 ───────────── */
 
 function DoneScreen({ max, filled, onRestart }: { max: number; filled: number; onRestart: () => void }) {
-  const seq = useMemo(() => buildSequence(max + filled + 3), [max, filled]);
+  const seq = useMemo(() => buildSequence(max, Math.max(0, filled - buildSlots(max).length)), [max, filled]);
   const drinks = countKind(seq, filled, 'drink');
   const waters = countKind(seq, filled, 'water');
   const over = Math.max(0, drinks - max);
@@ -643,7 +615,6 @@ const styles = StyleSheet.create({
     textShadowRadius: 0,
   },
   messageCardOver: { backgroundColor: '#FFF0EE' },
-  messageSub: { fontSize: 14, fontWeight: '800', color: '#2196C3', textAlign: 'center', marginTop: 4 },
   overArea: { width: '100%', maxWidth: 480, alignSelf: 'center', marginTop: 16, alignItems: 'center' },
   overLabel: {
     fontSize: 16,
@@ -666,16 +637,16 @@ const styles = StyleSheet.create({
     borderColor: '#E0483B',
     width: '100%',
   },
-  overButtonRow: { paddingHorizontal: 16, maxWidth: 480, width: '100%', alignSelf: 'center' },
+  overButtonRow: { alignItems: 'center', paddingTop: 4 },
   overButton: {
-    borderWidth: 3,
+    borderWidth: 2.5,
     borderColor: '#3B2A20',
     borderRadius: 999,
-    paddingVertical: 10,
-    alignItems: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 22,
     backgroundColor: '#FFE3DE',
   },
-  overButtonText: { fontSize: 16, fontWeight: '900', color: OVER_ACCENT },
+  overButtonText: { fontSize: 14, fontWeight: '900', color: OVER_ACCENT },
   footer: {
     flexDirection: 'row',
     gap: 12,

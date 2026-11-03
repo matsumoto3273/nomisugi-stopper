@@ -17,15 +17,12 @@ export function buildSlots(max: number): Slot[] {
 }
 
 /**
- * 上限を超えた分も含めた、終わりのない並び（水ロックは超過後も続く）。
- * 先頭は buildSlots(max) と同じ並びになるので、「埋めた数」をそのまま共通で使える。
+ * 上限を超えた分も含めた並び。上限までは buildSlots(max) と同じで、
+ * 超過分はお酒だけが続く（超過中は水ロックなし）。
  */
-export function buildSequence(drinkCount: number): Slot[] {
-  const slots: Slot[] = [];
-  for (let i = 1; i <= drinkCount; i++) {
-    slots.push({ kind: 'drink', drinkNo: i });
-    if (i % WATER_EVERY === 0) slots.push({ kind: 'water' });
-  }
+export function buildSequence(max: number, overCount: number): Slot[] {
+  const slots = buildSlots(max);
+  for (let i = 1; i <= overCount; i++) slots.push({ kind: 'drink', drinkNo: max + i });
   return slots;
 }
 
