@@ -27,7 +27,7 @@ import {
   getOverTint,
   OVER_ACCENT,
   getLevel,
-  LEVEL_MESSAGES,
+  getLevelMessage,
   LEVEL_THEMES,
   MAX_DRINKS,
   MIN_DRINKS,
@@ -213,7 +213,7 @@ function DrinkingScreen({
     if (filled > 0) onChangeFilled(filled - 1);
   };
 
-  let message = LEVEL_MESSAGES[level];
+  let message = getLevelMessage(drinks, max);
   if (over > 0) message = getOverMessage(over);
   else if (waterPending) message = 'お水タイムです。\nお水を頼んだらコップをタップ！';
 
