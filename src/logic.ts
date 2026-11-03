@@ -38,6 +38,8 @@ export function countKind(slots: Slot[], filled: number, kind: SlotKind): number
 export function getLevel(drinks: number, max: number): number {
   if (drinks <= 0) return 0;
   if (drinks >= max) return 6;
+  // 最後の1杯を飲んでいる間（上限の1杯手前まで飲み干したとき）は必ず「限界が近い」
+  if (drinks === max - 1) return 5;
   // 区切りの杯数は四捨五入（例: 上限8杯の20% = 1.6杯 → 2杯目までは段階1）
   // max×k/5 の端数は .2/.4/.6/.8 のどれかなので、ちょうど .5 になることはない
   for (let k = 1; k <= 4; k++) {
