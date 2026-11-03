@@ -242,11 +242,11 @@ function DrinkingScreen({
           >
             {message}
           </Text>
-          {drinks === 0 && <Text style={styles.messageNote}>1杯飲み干したらジョッキをタップ</Text>}
         </View>
 
         {/* ジョッキ一覧 */}
         <ScrollView ref={scrollRef} contentContainerStyle={styles.gridWrap}>
+          <Text style={styles.gridHint}>飲み干したらジョッキをタップ</Text>
           <View style={[styles.board, styles.grid]}>
             {slots.map((slot, i) => (
               <SlotButton
@@ -599,7 +599,16 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 0,
   },
-  messageNote: { fontSize: 13, fontWeight: '700', color: '#7A6A5E', textAlign: 'center', marginTop: 4 },
+  gridHint: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#FFF8E7',
+    textAlign: 'center',
+    marginBottom: 6,
+    textShadowColor: INK,
+    textShadowOffset: { width: 0, height: 1.5 },
+    textShadowRadius: 0,
+  },
   messageCardOver: { backgroundColor: '#FFF0EE' },
   overArea: { width: '100%', maxWidth: 480, alignSelf: 'center', marginTop: 16, alignItems: 'center' },
   overLabel: {
