@@ -17,11 +17,7 @@ import { WoodBackground } from './src/WoodBackground';
 import { TitleLogo } from './src/TitleLogo';
 import { useFonts } from 'expo-font';
 import { MochiyPopOne_400Regular } from '@expo-google-fonts/mochiy-pop-one';
-import { DelaGothicOne_400Regular } from '@expo-google-fonts/dela-gothic-one';
-import { ReggaeOne_400Regular } from '@expo-google-fonts/reggae-one';
-import { RampartOne_400Regular } from '@expo-google-fonts/rampart-one';
-import { YuseiMagic_400Regular } from '@expo-google-fonts/yusei-magic';
-const PREVIEW_VARIANT = Number((globalThis as any).location?.search?.match(/v=(\d)/)?.[1] ?? 0);
+
 import {
   buildSlots,
   countKind,
@@ -55,13 +51,8 @@ function saveState(s: Saved) {
 
 export default function App() {
   const [ready, setReady] = useState(false);
-  const [fontsLoaded] = useFonts({
-    MochiyPopOne_400Regular,
-    DelaGothicOne_400Regular,
-    ReggaeOne_400Regular,
-    RampartOne_400Regular,
-    YuseiMagic_400Regular,
-  });
+  // タイトル用フォント。読み込みを待たずに画面を出し、読み込めたら差し替わる
+  useFonts({ MochiyPopOne_400Regular });
   const [state, setState] = useState<Saved>({ phase: 'setup', max: 10, filled: 0 });
 
   useEffect(() => {
@@ -75,7 +66,7 @@ export default function App() {
     if (ready) saveState(state);
   }, [state, ready]);
 
-  if (!ready || !fontsLoaded) return null;
+  if (!ready) return null;
 
   return (
     <SafeAreaProvider>
@@ -120,7 +111,7 @@ function SetupScreen({ initial, onStart }: { initial: number; onStart: (max: num
           <MugIcon size={64} filled />
           <WaterIcon size={56} filled />
         </View>
-        {PREVIEW_VARIANT ? <TitleLogo variant={PREVIEW_VARIANT} /> : <Text style={styles.appTitle}>飲みすぎストッパー</Text>}
+        <TitleLogo />
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>本日の最大飲酒量</Text>
