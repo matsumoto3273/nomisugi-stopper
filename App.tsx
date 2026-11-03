@@ -32,7 +32,6 @@ import {
   LEVEL_THEMES,
   MAX_DRINKS,
   MIN_DRINKS,
-  WATER_EVERY,
 } from './src/logic';
 
 type Phase = 'setup' | 'drinking' | 'done';
@@ -147,9 +146,6 @@ function SetupScreen({ initial, onStart }: { initial: number; onStart: (max: num
               ))}
             </View>
           ))}
-          <Text style={styles.cardNote}>
-            {WATER_EVERY}杯ごとに、お水を1杯はさみます。
-          </Text>
         </View>
 
         <BigButton label="飲み会スタート！" color={LEVEL_THEMES[0].accent} onPress={() => onStart(max)} />
@@ -226,7 +222,6 @@ function DrinkingScreen({
       <SafeAreaView style={styles.screen}>
         {/* ヘッダー */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>飲みすぎストッパー</Text>
           <View style={[styles.counterRow, styles.board]}>
             <Text style={[styles.counterBig, { color: accent }]}>{drinks}</Text>
             <Text style={styles.counterSmall}> / {max} 杯</Text>
@@ -562,15 +557,6 @@ const styles = StyleSheet.create({
   bigButtonText: { fontSize: 20, fontWeight: '900', color: '#FFFFFF', letterSpacing: 1 },
 
   header: { alignItems: 'center', paddingTop: 12, paddingHorizontal: 16 },
-  headerTitle: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#FFF8E7',
-    marginBottom: 6,
-    textShadowColor: INK,
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 0,
-  },
   counterRow: { flexDirection: 'row', alignItems: 'baseline', paddingHorizontal: 22, paddingVertical: 2 },
   counterBig: { fontSize: 52, fontWeight: '900' },
   counterSmall: { fontSize: 22, fontWeight: '800', color: INK },
