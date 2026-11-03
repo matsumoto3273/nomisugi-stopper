@@ -179,8 +179,8 @@ function DrinkingScreen({
   const accent = over > 0 ? OVER_ACCENT : LEVEL_THEMES[level].accent;
   const waterPending = seq[filled]?.kind === 'water';
   const reachedLimit = filled >= slots.length;
-  // 枠を付ける位置：飲む前は1杯目、お水待ちはお水、それ以外は「今飲んでいる（最後にタップした）1杯」
-  const highlightIndex = filled === 0 ? 0 : waterPending ? filled : filled - 1;
+  // 枠は次にタップする空白（＝今飲んでいる1杯。飲み干したらタップ）
+  const highlightIndex = filled;
 
   // 枠の外に並べる超過分
   const overItems = seq.slice(slots.length, filled).map((slot, k) => ({ slot, index: slots.length + k }));
@@ -242,6 +242,7 @@ function DrinkingScreen({
           >
             {message}
           </Text>
+          {drinks === 0 && <Text style={styles.messageNote}>1杯飲み干したらジョッキをタップ</Text>}
         </View>
 
         {/* ジョッキ一覧 */}
@@ -598,6 +599,7 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 0,
   },
+  messageNote: { fontSize: 13, fontWeight: '700', color: '#7A6A5E', textAlign: 'center', marginTop: 4 },
   messageCardOver: { backgroundColor: '#FFF0EE' },
   overArea: { width: '100%', maxWidth: 480, alignSelf: 'center', marginTop: 16, alignItems: 'center' },
   overLabel: {

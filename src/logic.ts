@@ -47,7 +47,7 @@ export function getLevel(drinks: number, max: number): number {
 }
 
 export const LEVEL_MESSAGES: string[] = [
-  '最初の1杯を注文したら、\nジョッキをタップしてください。',
+  '飲み会スタートですね。\n楽しんでください。',
   'まだまだ大丈夫です。\nこのペースで楽しみましょう。',
   '進んできましたね。\n少しペースを落としましょう。',
   'そろそろ気をつけてください。',
@@ -56,14 +56,12 @@ export const LEVEL_MESSAGES: string[] = [
   '今日の上限に到達しました。\nここで終了しましょう！',
 ];
 
-/** 1杯目だけに出す文言 */
-export const START_MESSAGE = '飲み会スタートですね。\n楽しんでください。';
-
-/** 杯数に応じた文言（上限超過は除く） */
+/**
+ * 杯数に応じた文言（上限超過は除く）。
+ * タップは「1杯飲み干したら」なので、drinks は飲み終わった杯数。
+ */
 export function getLevelMessage(drinks: number, max: number): string {
-  const level = getLevel(drinks, max);
-  if (drinks === 1 && level < 6) return START_MESSAGE;
-  return LEVEL_MESSAGES[level];
+  return LEVEL_MESSAGES[getLevel(drinks, max)];
 }
 
 export type Theme = { accent: string };
