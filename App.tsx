@@ -6,6 +6,7 @@ import {
   Modal,
   Pressable,
   ScrollView,
+  type ScrollViewInstance,
   StyleSheet,
   Text,
   View,
@@ -19,8 +20,12 @@ import { useFonts } from 'expo-font';
 import { MPLUSRounded1c_900Black } from '@expo-google-fonts/m-plus-rounded-1c/900Black';
 
 import {
+  buildSequence,
   buildSlots,
   countKind,
+  getOverMessage,
+  getOverTint,
+  OVER_ACCENT,
   getLevel,
   LEVEL_MESSAGES,
   LEVEL_THEMES,
@@ -166,16 +171,40 @@ function DrinkingScreen({
   onChangeFilled: (n: number) => void;
   onFinish: () => void;
 }) {
+  // 上限までの並び（枠の中に表示する分）
   const slots = useMemo(() => buildSlots(max), [max]);
-  const drinks = countKind(slots, filled, 'drink');
-  const waters = countKind(slots, filled, 'water');
+  // 上限を超えた分も含めた並び（余裕を持って長めに作る）
+  const seq = useMemo(() => buildSequence(max + filled + 3), [max, filled]);
+  const drinks = countKind(seq, filled, 'drink');
+  const waters = countKind(seq, filled, 'water');
+  const over = Math.max(0, drinks - max);
   const level = getLevel(drinks, max);
-  const theme = LEVEL_THEMES[level];
-  const next = slots[filled];
-  const waterPending = next?.kind === 'water';
+  const accent = over > 0 ? OVER_ACCENT : LEVEL_THEMES[level].accent;
+  const waterPending = seq[filled]?.kind === 'water';
+  const reachedLimit = filled >= slots.length;
 
   const [waterModal, setWaterModal] = useState(false);
+  // 「それでも追加する」を押したか（上限ちょうどで止めている間は、超過枠を出さない）
+  const [overStarted, setOverStarted] = useState(over > 0);
+  useEffect(() => {
+    if (!reachedLimit) setOverStarted(false);
+  }, [reachedLimit]);
+  const showPendingWater = reachedLimit && waterPending && (over > 0 || overStarted);
+
+  // 枠の外に並べる超過分（埋めた分＋未入力のお水）
+  const overItems = seq
+    .slice(slots.length, filled + (showPendingWater ? 1 : 0))
+    .map((slot, k) => ({ slot, index: slots.length + k }));
+
   const [finishModal, setFinishModal] = useState(false);
+  const scrollRef = useRef<ScrollViewInstance>(null);
+
+  const fillNext = () => {
+    const nextFilled = filled + 1;
+    onChangeFilled(nextFilled);
+    // 上限ちょうどで止めた場合は、水アラートは「それでも追加する」を押すまで出さない
+    if (seq[nextFilled]?.kind === 'water' && nextFilled < slots.length) setWaterModal(true);
+  };
 
   const tapSlot = (index: number) => {
     if (index < filled) return;
@@ -184,55 +213,107 @@ function DrinkingScreen({
       if (waterPending) setWaterModal(true);
       return;
     }
+    fillNext();
+  };
+
+  // 上限を超えて追加する
+  const addOver = () => {
+    setOverStarted(true);
+    if (waterPending) {
+      setWaterModal(true);
+      return;
+    }
     const nextFilled = filled + 1;
     onChangeFilled(nextFilled);
-    if (slots[nextFilled]?.kind === 'water') setWaterModal(true);
+    if (seq[nextFilled]?.kind === 'water') setWaterModal(true);
   };
+
+  useEffect(() => {
+    if (overItems.length > 0) setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 50);
+  }, [overItems.length]);
 
   const undo = () => {
     if (filled > 0) onChangeFilled(filled - 1);
   };
 
+  let message = LEVEL_MESSAGES[level];
+  if (over > 0) message = getOverMessage(over);
+  // 超過中は超過の文言を優先し、お水の案内は下に小さく出す
+  const overWaterNote = over > 0 && waterPending;
+  if (waterPending && !overWaterNote && (!reachedLimit || showPendingWater)) {
+    message = 'お水タイムです。\nお水を頼んだらコップをタップ！';
+  }
+
   return (
     <View style={styles.screen}>
       <WoodBackground />
+      {over > 0 && <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: getOverTint(over) }]} />}
       <SafeAreaView style={styles.screen}>
         {/* ヘッダー */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>飲みすぎストッパー</Text>
           <View style={[styles.counterRow, styles.board]}>
-            <Text style={[styles.counterBig, { color: theme.accent }]}>{drinks}</Text>
+            <Text style={[styles.counterBig, { color: accent }]}>{drinks}</Text>
             <Text style={styles.counterSmall}> / {max} 杯</Text>
+            {over > 0 && <Text style={styles.counterOver}> +{over}</Text>}
             <Text style={styles.counterWater}>　💧 {waters}</Text>
           </View>
         </View>
 
         {/* 文言 */}
-        <View style={[styles.messageCard, { borderColor: theme.accent }]}>
-          <Text style={styles.messageText}>
-            {waterPending ? 'お水タイムです。\nお水を頼んだらコップをタップ！' : LEVEL_MESSAGES[level]}
-          </Text>
+        <View style={[styles.messageCard, { borderColor: accent }, over > 0 && styles.messageCardOver]}>
+          <Text style={[styles.messageText, over > 0 && { color: OVER_ACCENT }]}>{message}</Text>
+          {overWaterNote && <Text style={styles.messageSub}>💧 まずお水を頼んで、コップをタップ</Text>}
         </View>
 
         {/* ジョッキ一覧 */}
-        <ScrollView contentContainerStyle={styles.gridWrap}>
+        <ScrollView ref={scrollRef} contentContainerStyle={styles.gridWrap}>
           <View style={[styles.board, styles.grid]}>
-          {slots.map((slot, i) => (
-            <SlotButton
-              key={i}
-              kind={slot.kind}
-              label={slot.kind === 'drink' ? `${slot.drinkNo}` : '水'}
-              filled={i < filled}
-              isNext={i === filled}
-              locked={i > filled && waterPending && slot.kind === 'drink'}
-              accent={theme.accent}
-              onPress={() => tapSlot(i)}
-            />
-          ))}
+            {slots.map((slot, i) => (
+              <SlotButton
+                key={i}
+                kind={slot.kind}
+                label={slot.kind === 'drink' ? `${slot.drinkNo}` : '水'}
+                filled={i < filled}
+                isNext={i === filled}
+                locked={i > filled && waterPending && slot.kind === 'drink'}
+                accent={accent}
+                onPress={() => tapSlot(i)}
+              />
+            ))}
           </View>
+
+          {/* 上限超過分（枠の外） */}
+          {overItems.length > 0 && (
+            <View style={styles.overArea}>
+              <Text style={styles.overLabel}>上限オーバー {over > 0 ? `+${over}杯` : ''}</Text>
+              <View style={styles.overGrid}>
+                {overItems.map(({ slot, index }) => (
+                  <SlotButton
+                    key={index}
+                    kind={slot.kind}
+                    label={slot.kind === 'drink' ? `+${(slot.drinkNo ?? 0) - max}` : '水'}
+                    filled={index < filled}
+                    isNext={index === filled}
+                    locked={false}
+                    danger
+                    accent={OVER_ACCENT}
+                    onPress={() => tapSlot(index)}
+                  />
+                ))}
+              </View>
+            </View>
+          )}
         </ScrollView>
 
         {/* 下部ボタン */}
+        {reachedLimit && (
+          <View style={styles.overButtonRow}>
+            <Pressable onPress={addOver} style={styles.overButton}>
+              <Text style={styles.overButtonText}>それでも追加する</Text>
+            </Pressable>
+          </View>
+        )}
         <View style={styles.footer}>
           <Pressable
             onPress={undo}
@@ -241,10 +322,7 @@ function DrinkingScreen({
           >
             <Text style={styles.subButtonText}>1つ戻す</Text>
           </Pressable>
-          <Pressable
-            onPress={() => setFinishModal(true)}
-            style={[styles.finishButton, { backgroundColor: theme.accent }]}
-          >
+          <Pressable onPress={() => setFinishModal(true)} style={[styles.finishButton, { backgroundColor: accent }]}>
             <Text style={styles.finishButtonText}>飲み会終了</Text>
           </Pressable>
         </View>
@@ -267,7 +345,7 @@ function DrinkingScreen({
         <Text style={styles.modalText}>今日は {drinks} 杯で終わりにします。</Text>
         <BigButton
           label="終了する"
-          color={theme.accent}
+          color={accent}
           onPress={() => {
             setFinishModal(false);
             onFinish();
@@ -287,6 +365,7 @@ function SlotButton({
   filled,
   isNext,
   locked,
+  danger,
   accent,
   onPress,
 }: {
@@ -295,6 +374,7 @@ function SlotButton({
   filled: boolean;
   isNext: boolean;
   locked: boolean;
+  danger?: boolean;
   accent: string;
   onPress: () => void;
 }) {
@@ -319,9 +399,9 @@ function SlotButton({
       ]}
     >
       <Animated.View style={{ transform: [{ scale }] }}>
-        <Icon size={50} filled={filled} locked={locked} />
+        <Icon size={50} filled={filled} locked={locked} danger={danger} />
       </Animated.View>
-      <Text style={[styles.slotLabel, kind === 'water' && { color: '#2196C3' }]}>{label}</Text>
+      <Text style={[styles.slotLabel, kind === 'water' && { color: '#2196C3' }, danger && styles.slotLabelOver, danger && kind === 'water' && { color: '#BDE7F7' }]}>{label}</Text>
     </Pressable>
   );
 }
@@ -329,23 +409,30 @@ function SlotButton({
 /* ───────────── 終了 ───────────── */
 
 function DoneScreen({ max, filled, onRestart }: { max: number; filled: number; onRestart: () => void }) {
-  const slots = useMemo(() => buildSlots(max), [max]);
-  const drinks = countKind(slots, filled, 'drink');
-  const waters = countKind(slots, filled, 'water');
+  const seq = useMemo(() => buildSequence(max + filled + 3), [max, filled]);
+  const drinks = countKind(seq, filled, 'drink');
+  const waters = countKind(seq, filled, 'water');
+  const over = Math.max(0, drinks - max);
 
   return (
     <View style={styles.screen}>
       <WoodBackground />
       <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.setupContent}>
-        <Text style={styles.doneEmoji}>🎉</Text>
+        <Text style={styles.doneEmoji}>{over > 0 ? '🌙' : '🎉'}</Text>
         <Text style={styles.appTitle}>お疲れ様でした</Text>
         <View style={styles.card}>
-          <Text style={styles.doneMain}>自分との約束を{'\n'}守れましたね。</Text>
+          {over > 0 ? (
+            <Text style={styles.doneMain}>
+              今日は{'\n'}<Text style={{ color: OVER_ACCENT }}>{over}杯オーバー</Text>でした。{'\n'}次は約束を{'\n'}守りましょう。
+            </Text>
+          ) : (
+            <Text style={styles.doneMain}>自分との約束を{'\n'}守れましたね。</Text>
+          )}
           <View style={styles.doneStats}>
             <View style={styles.doneStat}>
-              <MugIcon size={48} filled />
-              <Text style={styles.doneStatText}>
+              <MugIcon size={48} filled danger={over > 0} />
+              <Text style={[styles.doneStatText, over > 0 && { color: OVER_ACCENT }]}>
                 {drinks} <Text style={styles.doneStatUnit}>/ {max} 杯</Text>
               </Text>
             </View>
@@ -360,7 +447,7 @@ function DoneScreen({ max, filled, onRestart }: { max: number; filled: number; o
             帰ったらお水をもう1杯。{'\n'}気をつけて帰りましょう。
           </Text>
         </View>
-        <BigButton label="最初の画面に戻る" color={LEVEL_THEMES[2].accent} onPress={onRestart} />
+        <BigButton label="最初の画面に戻る" color={over > 0 ? OVER_ACCENT : LEVEL_THEMES[2].accent} onPress={onRestart} />
       </ScrollView>
       </SafeAreaView>
     </View>
@@ -510,6 +597,7 @@ const styles = StyleSheet.create({
   counterRow: { flexDirection: 'row', alignItems: 'baseline', paddingHorizontal: 22, paddingVertical: 2 },
   counterBig: { fontSize: 52, fontWeight: '900' },
   counterSmall: { fontSize: 22, fontWeight: '800', color: INK },
+  counterOver: { fontSize: 22, fontWeight: '900', color: OVER_ACCENT },
   counterWater: { fontSize: 18, fontWeight: '800', color: '#2196C3' },
   messageCard: {
     ...popShadow,
@@ -548,6 +636,46 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   slotLabel: { fontSize: 12, fontWeight: '800', color: '#5C4B40' },
+  slotLabelOver: {
+    color: '#FFE3DE',
+    textShadowColor: '#3B2A20',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 0,
+  },
+  messageCardOver: { backgroundColor: '#FFF0EE' },
+  messageSub: { fontSize: 14, fontWeight: '800', color: '#2196C3', textAlign: 'center', marginTop: 4 },
+  overArea: { width: '100%', maxWidth: 480, alignSelf: 'center', marginTop: 16, alignItems: 'center' },
+  overLabel: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#FFE3DE',
+    marginBottom: 6,
+    textShadowColor: '#3B2A20',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 0,
+  },
+  overGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 6,
+    padding: 8,
+    borderRadius: 18,
+    borderWidth: 3,
+    borderStyle: 'dashed',
+    borderColor: '#E0483B',
+    width: '100%',
+  },
+  overButtonRow: { paddingHorizontal: 16, maxWidth: 480, width: '100%', alignSelf: 'center' },
+  overButton: {
+    borderWidth: 3,
+    borderColor: '#3B2A20',
+    borderRadius: 999,
+    paddingVertical: 10,
+    alignItems: 'center',
+    backgroundColor: '#FFE3DE',
+  },
+  overButtonText: { fontSize: 16, fontWeight: '900', color: OVER_ACCENT },
   footer: {
     flexDirection: 'row',
     gap: 12,

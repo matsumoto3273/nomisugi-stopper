@@ -3,10 +3,15 @@ import Svg, { Circle, Ellipse, Path, Rect } from 'react-native-svg';
 const INK = '#3B2A20';
 const EMPTY_LINE = '#9AA5AB';
 
-type Props = { size?: number; filled: boolean; locked?: boolean };
+type Props = { size?: number; filled: boolean; locked?: boolean; danger?: boolean };
+
+const BEER = { body: '#F6A623', light: '#FFD27A', dark: '#E08A0B', bubble: '#FFE3A3', foam: '#FFFFFF', foamShade: '#F1F1F1' };
+/** 上限超過分の赤っぽいジョッキ */
+const DANGER = { body: '#E0483B', light: '#F49488', dark: '#B42C22', bubble: '#F8C1B9', foam: '#FFE3DE', foamShade: '#F7C9C2' };
 
 /** 中ジョッキ（ポップでくっきりした輪郭のイラスト） */
-export function MugIcon({ size = 56, filled, locked }: Props) {
+export function MugIcon({ size = 56, filled, locked, danger }: Props) {
+  const c = danger ? DANGER : BEER;
   if (!filled) {
     return (
       <Svg width={size} height={size} viewBox="0 0 64 64">
@@ -57,22 +62,22 @@ export function MugIcon({ size = 56, filled, locked }: Props) {
         strokeWidth={1.5}
       />
       {/* ビール本体 */}
-      <Rect x={10} y={14} width={34} height={42} rx={5} fill="#F6A623" stroke={INK} strokeWidth={3.5} />
-      <Rect x={14} y={22} width={5} height={28} rx={2.5} fill="#FFD27A" />
-      <Rect x={36} y={22} width={4} height={30} rx={2} fill="#E08A0B" />
+      <Rect x={10} y={14} width={34} height={42} rx={5} fill={c.body} stroke={INK} strokeWidth={3.5} />
+      <Rect x={14} y={22} width={5} height={28} rx={2.5} fill={c.light} />
+      <Rect x={36} y={22} width={4} height={30} rx={2} fill={c.dark} />
       {/* 泡のつぶつぶ */}
-      <Circle cx={27} cy={42} r={1.8} fill="#FFE3A3" />
-      <Circle cx={31} cy={34} r={1.4} fill="#FFE3A3" />
-      <Circle cx={25} cy={30} r={1.2} fill="#FFE3A3" />
+      <Circle cx={27} cy={42} r={1.8} fill={c.bubble} />
+      <Circle cx={31} cy={34} r={1.4} fill={c.bubble} />
+      <Circle cx={25} cy={30} r={1.2} fill={c.bubble} />
       {/* 泡 */}
       <Path
         d="M8 18 a6 6 0 0 1 8 -8 a7 7 0 0 1 12 -2 a7 7 0 0 1 12 2 a6 6 0 0 1 6 8 a4 4 0 0 1 -4 4 h-30 a4 4 0 0 1 -4 -4 z"
-        fill="#FFFFFF"
+        fill={c.foam}
         stroke={INK}
         strokeWidth={3.5}
         strokeLinejoin="round"
       />
-      <Ellipse cx={18} cy={13} rx={3} ry={1.6} fill="#F1F1F1" />
+      <Ellipse cx={18} cy={13} rx={3} ry={1.6} fill={c.foamShade} />
     </Svg>
   );
 }

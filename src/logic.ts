@@ -16,6 +16,19 @@ export function buildSlots(max: number): Slot[] {
   return slots;
 }
 
+/**
+ * 上限を超えた分も含めた、終わりのない並び（水ロックは超過後も続く）。
+ * 先頭は buildSlots(max) と同じ並びになるので、「埋めた数」をそのまま共通で使える。
+ */
+export function buildSequence(drinkCount: number): Slot[] {
+  const slots: Slot[] = [];
+  for (let i = 1; i <= drinkCount; i++) {
+    slots.push({ kind: 'drink', drinkNo: i });
+    if (i % WATER_EVERY === 0) slots.push({ kind: 'water' });
+  }
+  return slots;
+}
+
 export function countKind(slots: Slot[], filled: number, kind: SlotKind): number {
   return slots.slice(0, filled).filter((s) => s.kind === kind).length;
 }
@@ -56,3 +69,30 @@ export const LEVEL_THEMES: Theme[] = [
   { accent: '#D93A2E' }, // 赤
   { accent: '#B71C1C' }, // 濃い赤
 ];
+
+/** 上限超過時の文言（+1杯, +2杯, +3杯, +4杯以降） */
+export const OVER_MESSAGES: string[] = [
+  '大変なことになりますよ？',
+  '明日の自分が泣いています',
+  '記憶、残ってますか？',
+  'もう知りません',
+];
+
+export function getOverMessage(over: number): string {
+  return OVER_MESSAGES[Math.min(over, OVER_MESSAGES.length) - 1];
+}
+
+/** 上限超過中、木目の上に重ねる色（暗い赤 → くすんだ色へ） */
+export const OVER_TINTS: string[] = [
+  'rgba(130, 10, 10, 0.30)', // +1
+  'rgba(110, 10, 15, 0.45)', // +2
+  'rgba(80, 25, 30, 0.58)', // +3
+  'rgba(45, 35, 40, 0.70)', // +4〜
+];
+
+export function getOverTint(over: number): string {
+  return OVER_TINTS[Math.min(over, OVER_TINTS.length) - 1];
+}
+
+/** 上限超過中の強調色 */
+export const OVER_ACCENT = '#8E1B1B';
