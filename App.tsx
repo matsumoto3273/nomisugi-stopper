@@ -390,7 +390,14 @@ function DoneScreen({ max, filled, onRestart }: { max: number; filled: number; o
               </Text>
             </View>
           ) : (
-            <Text style={styles.doneMain}>自分との約束を{'\n'}守れましたね</Text>
+            <View style={{ alignItems: 'center' }}>
+              <Text style={styles.doneMain}>自分との約束を</Text>
+              {/* 「。」は右にぶら下げ、見た目の幅（約半文字）ぶん行を少し左へ寄せて、中央に見えるようにする */}
+              <View style={{ transform: [{ translateX: -6 }] }}>
+                <Text style={styles.doneMain}>守れましたね</Text>
+                <Text style={[styles.doneMain, styles.hangingPeriod]}>。</Text>
+              </View>
+            </View>
           )}
           <View style={styles.doneStats}>
             <View style={styles.doneStat}>
@@ -668,6 +675,7 @@ const styles = StyleSheet.create({
   linkText: { fontSize: 15, fontWeight: '800', color: '#5C4B40', textDecorationLine: 'underline' },
 
   doneEmoji: { fontSize: 56 },
+  hangingPeriod: { position: 'absolute', left: '100%', top: 0 },
   doneMain: { fontSize: 24, fontWeight: '900', color: INK, textAlign: 'center', lineHeight: 34 },
   doneStats: { flexDirection: 'row', gap: 28 },
   doneStat: { alignItems: 'center' },
