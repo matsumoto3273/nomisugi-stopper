@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "飲みすぎストッパー",
+    "slug": "nomisugi-stopper",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "CFBundleDevelopmentRegion": "ja"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#DFF4FB",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "name": "飲みすぎストッパー",
+      "shortName": "飲みすぎストッパー",
+      "lang": "ja",
+      "themeColor": "#DFF4FB",
+      "backgroundColor": "#DFF4FB",
+      "display": "standalone"
+    },
+    "experiments": {
+      "baseUrl": "/nomisugi-stopper"
+    }
+  }
+}
