@@ -44,11 +44,11 @@ function OutlinedText({
 }
 
 /** 冒頭画面のタイトル（看板ポップ風：黄色の丸文字＋太いフチ＋影） */
-export function TitleLogo() {
+export function TitleLogo({ fontFamily = 'MochiyPopOne_400Regular' }: { fontFamily?: string }) {
   return (
     <OutlinedText
       text="飲みすぎストッパー"
-      style={{ fontFamily: 'MochiyPopOne_400Regular', fontSize: 33, color: '#FFD23F' }}
+      style={{ fontFamily, fontSize: 33, color: '#FFD23F' }}
       outline={INK}
       width={3.5}
       shadow={{ color: INK, dy: 4 }}

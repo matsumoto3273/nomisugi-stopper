@@ -17,6 +17,14 @@ import { WoodBackground } from './src/WoodBackground';
 import { TitleLogo } from './src/TitleLogo';
 import { useFonts } from 'expo-font';
 import { MochiyPopOne_400Regular } from '@expo-google-fonts/mochiy-pop-one';
+import { DarumadropOne_400Regular } from '@expo-google-fonts/darumadrop-one';
+import { PottaOne_400Regular } from '@expo-google-fonts/potta-one';
+import { RocknRollOne_400Regular } from '@expo-google-fonts/rocknroll-one';
+import { MPLUSRounded1c_900Black } from '@expo-google-fonts/m-plus-rounded-1c';
+import { HachiMaruPop_400Regular } from '@expo-google-fonts/hachi-maru-pop';
+import { YujiSyuku_400Regular } from '@expo-google-fonts/yuji-syuku';
+import { DelaGothicOne_400Regular } from '@expo-google-fonts/dela-gothic-one';
+const PREVIEW_FONT: string | undefined = (globalThis as any).location?.search?.match(/f=(\w+)/)?.[1];
 
 import {
   buildSlots,
@@ -52,7 +60,16 @@ function saveState(s: Saved) {
 export default function App() {
   const [ready, setReady] = useState(false);
   // タイトル用フォント。読み込みを待たずに画面を出し、読み込めたら差し替わる
-  useFonts({ MochiyPopOne_400Regular });
+  useFonts({
+    MochiyPopOne_400Regular,
+    DarumadropOne_400Regular,
+    PottaOne_400Regular,
+    RocknRollOne_400Regular,
+    MPLUSRounded1c_900Black,
+    HachiMaruPop_400Regular,
+    YujiSyuku_400Regular,
+    DelaGothicOne_400Regular,
+  });
   const [state, setState] = useState<Saved>({ phase: 'setup', max: 10, filled: 0 });
 
   useEffect(() => {
@@ -111,7 +128,7 @@ function SetupScreen({ initial, onStart }: { initial: number; onStart: (max: num
           <MugIcon size={64} filled />
           <WaterIcon size={56} filled />
         </View>
-        <TitleLogo />
+        <TitleLogo fontFamily={PREVIEW_FONT} />
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>本日の最大飲酒量</Text>
