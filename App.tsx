@@ -182,7 +182,7 @@ function DrinkingScreen({
   // 枠は次にタップする空白（＝今飲んでいる1杯。飲み干したらタップ）
   const highlightIndex = filled;
 
-  // 枠の外に並べる超過分
+  // 枠の外に並べる超過分（お酒のみ・すべて飲み干した分）
   const overItems = seq.slice(slots.length, filled).map((slot, k) => ({ slot, index: slots.length + k }));
 
   const [finishModal, setFinishModal] = useState(false);
@@ -246,7 +246,7 @@ function DrinkingScreen({
 
         {/* ジョッキ一覧 */}
         <ScrollView ref={scrollRef} contentContainerStyle={styles.gridWrap}>
-          <Text style={styles.gridHint}>飲み干したらジョッキをタップ</Text>
+          {!reachedLimit && <Text style={styles.gridHint}>飲み干したらジョッキをタップ</Text>}
           <View style={[styles.board, styles.grid]}>
             {slots.map((slot, i) => (
               <SlotButton
@@ -268,17 +268,7 @@ function DrinkingScreen({
               <Text style={styles.overLabel}>上限オーバー +{over}杯</Text>
               <View style={styles.overGrid}>
                 {overItems.map(({ slot, index }) => (
-                  <SlotButton
-                    key={index}
-                    kind={slot.kind}
-                    label={slot.kind === 'drink' ? `+${(slot.drinkNo ?? 0) - max}` : '水'}
-                    filled={index < filled}
-                    highlighted={index === highlightIndex}
-                    locked={false}
-                    danger
-                    accent={OVER_ACCENT}
-                    onPress={() => tapSlot(index)}
-                  />
+                  <SlotButton key={index} kind="drink" label={`+${(slot.drinkNo ?? 0) - max}`} filled danger accent={OVER_ACCENT} />
                 ))}
               </View>
             </View>
@@ -332,8 +322,8 @@ function SlotButton({
   kind,
   label,
   filled,
-  highlighted,
-  locked,
+  highlighted = false,
+  locked = false,
   danger,
   accent,
   onPress,
@@ -341,11 +331,11 @@ function SlotButton({
   kind: 'drink' | 'water';
   label: string;
   filled: boolean;
-  highlighted: boolean;
-  locked: boolean;
+  highlighted?: boolean;
+  locked?: boolean;
   danger?: boolean;
   accent: string;
-  onPress: () => void;
+  onPress?: () => void;
 }) {
   // 埋まった瞬間にポンッと弾ませる
   const scale = useRef(new Animated.Value(1)).current;
