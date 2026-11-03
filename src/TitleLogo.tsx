@@ -64,6 +64,7 @@ export const TITLE_COLOR_SETS: ColorSet[] = [
   { first: YELLOW, second: RED, outline: INK, shadow: INK }, // 5 黄×赤
   { first: WHITE, second: BLUE, outline: INK, shadow: INK }, // 6 白×水色
   { first: CREAM, second: YELLOW, outline: '#8B2A1E', shadow: INK }, // 7 クリーム×黄（えんじのフチ）
+  { first: RED, second: YELLOW, outline: INK, shadow: INK }, // 8 赤×黄
 ];
 
 /** 冒頭画面のタイトル（看板ポップ風：太い丸文字＋太いフチ＋影） */
