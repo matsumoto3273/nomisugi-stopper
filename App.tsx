@@ -186,20 +186,13 @@ function DrinkingScreen({
   // 枠の外に並べる超過分
   const overItems = seq.slice(slots.length, filled).map((slot, k) => ({ slot, index: slots.length + k }));
 
-  const [waterModal, setWaterModal] = useState(false);
   const [finishModal, setFinishModal] = useState(false);
   const scrollRef = useRef<ScrollViewInstance>(null);
 
   const tapSlot = (index: number) => {
-    if (index < filled) return;
-    if (index > filled) {
-      // 先に水を飲まないと次のジョッキは埋められない
-      if (waterPending) setWaterModal(true);
-      return;
-    }
-    const nextFilled = filled + 1;
-    onChangeFilled(nextFilled);
-    if (seq[nextFilled]?.kind === 'water') setWaterModal(true);
+    // 埋められるのは次の1つだけ（お水が先なら、お水を埋めるまで次のジョッキには進めない）
+    if (index !== filled) return;
+    onChangeFilled(filled + 1);
   };
 
   // 上限を超えて追加する（水ロックなし）
@@ -300,17 +293,6 @@ function DrinkingScreen({
           </Pressable>
         </View>
       </SafeAreaView>
-
-      {/* お水アラート */}
-      <PopupModal visible={waterModal} onClose={() => setWaterModal(false)}>
-        <WaterIcon size={88} filled />
-        <Text style={styles.modalTitle}>お水を注文しましょう！</Text>
-        <Text style={styles.modalText}>
-          {drinks}杯飲みました。{'\n'}お水を1杯頼んで、コップをタップ。{'\n'}
-          飲むまで次のお酒はおあずけです。
-        </Text>
-        <BigButton label="お水を頼む" color="#2196C3" onPress={() => setWaterModal(false)} />
-      </PopupModal>
 
       {/* 終了確認 */}
       <PopupModal visible={finishModal} onClose={() => setFinishModal(false)}>
