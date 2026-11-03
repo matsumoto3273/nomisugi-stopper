@@ -9,6 +9,7 @@ import {
   type ScrollViewInstance,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -208,11 +209,15 @@ function DrinkingScreen({
 
   let message = getLevelMessage(drinks, max);
   if (over > 0) message = getOverMessage(over);
-  // お水：1回目は頼んでもらう。2回目以降は手元に残っているかもしれないので「飲む」を促す
-  const waterNote = waterPending && over === 0 && waters > 0;
-  if (over === 0 && waterPending) {
-    message = waters === 0 ? 'お水を頼んで、\n飲んだらタップ' : '手元のお水を飲みましょう。\n飲んだらタップ';
+  // お水：1回目は頼んでもらう。2回目以降は「飲む」だけ促す（残っていれば飲む、なければ頼んで飲む）
+  const isWaterMessage = over === 0 && waterPending;
+  if (isWaterMessage) {
+    message = waters === 0 ? 'お水を頼んで、飲んだらタップ' : 'お水を飲みましょう。飲んだらタップ';
   }
+  // お水の文言は1行で収まるよう、画面幅が狭いときだけ文字を小さくする
+  const { width: screenWidth } = useWindowDimensions();
+  const cardInnerWidth = Math.min(screenWidth * 0.92, 480) - 30;
+  const waterFontSize = Math.min(18, Math.floor(cardInnerWidth / message.length));
 
   return (
     <View style={styles.screen}>
@@ -232,8 +237,15 @@ function DrinkingScreen({
 
         {/* 文言 */}
         <View style={[styles.messageCard, { borderColor: accent }, over > 0 && styles.messageCardOver]}>
-          <Text style={[styles.messageText, over > 0 && { color: OVER_ACCENT }]}>{message}</Text>
-          {waterNote && <Text style={styles.messageNote}>※なかったら頼みましょう</Text>}
+          <Text
+            style={[
+              styles.messageText,
+              over > 0 && { color: OVER_ACCENT },
+              isWaterMessage && { fontSize: waterFontSize },
+            ]}
+          >
+            {message}
+          </Text>
         </View>
 
         {/* ジョッキ一覧 */}
@@ -607,7 +619,6 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 0,
   },
-  messageNote: { fontSize: 12, fontWeight: '700', color: '#7A6A5E', textAlign: 'center', marginTop: 4 },
   messageCardOver: { backgroundColor: '#FFF0EE' },
   overArea: { width: '100%', maxWidth: 480, alignSelf: 'center', marginTop: 16, alignItems: 'center' },
   overLabel: {
