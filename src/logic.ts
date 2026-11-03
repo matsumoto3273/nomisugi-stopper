@@ -31,6 +31,18 @@ export function countKind(slots: Slot[], filled: number, kind: SlotKind): number
 }
 
 /**
+ * 上限3〜7杯の固定の段階。[i] は「i+1杯飲み干したとき」の段階（上限到達の手前まで）。
+ * 1:水色 2:緑 3:黄 4:オレンジ 5:赤
+ */
+const FIXED_LEVELS: Record<number, number[]> = {
+  3: [1, 4],
+  4: [1, 3, 4],
+  5: [1, 2, 3, 4],
+  6: [1, 2, 3, 4, 5],
+  7: [1, 2, 2, 3, 4, 5],
+};
+
+/**
  * 危険度レベル
  * 0: まだ0杯 / 1: 〜20% / 2: 〜40% / 3: 〜60% / 4: 〜80% / 5: 〜100%未満 / 6: 上限到達
  * （各区切りの杯数は四捨五入）
@@ -38,6 +50,9 @@ export function countKind(slots: Slot[], filled: number, kind: SlotKind): number
 export function getLevel(drinks: number, max: number): number {
   if (drinks <= 0) return 0;
   if (drinks >= max) return 6;
+  // 上限が少ないときは割合ではなく固定の段階にする
+  const fixed = FIXED_LEVELS[max];
+  if (fixed) return fixed[drinks - 1];
   // 区切りの杯数は四捨五入（例: 上限8杯の20% = 1.6杯 → 2杯目までは段階1）
   // max×k/5 の端数は .2/.4/.6/.8 のどれかなので、ちょうど .5 になることはない
   for (let k = 1; k <= 4; k++) {
