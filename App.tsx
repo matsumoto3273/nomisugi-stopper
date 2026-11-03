@@ -119,17 +119,19 @@ function SetupScreen({ initial, onStart }: { initial: number; onStart: (max: num
             <RoundButton label="＋" onPress={() => change(1)} disabled={max >= MAX_DRINKS} />
           </View>
 
-          <View style={styles.chips}>
-            {[3, 5, 8, 10, 15, 20].map((n) => (
-              <Pressable
-                key={n}
-                onPress={() => setMax(n)}
-                style={[styles.chip, n === max && styles.chipActive]}
-              >
-                <Text style={[styles.chipText, n === max && styles.chipTextActive]}>{n}杯</Text>
-              </Pressable>
-            ))}
-          </View>
+          {[[3, 5, 8, 10], [15, 20]].map((row) => (
+            <View key={row[0]} style={styles.chips}>
+              {row.map((n) => (
+                <Pressable
+                  key={n}
+                  onPress={() => setMax(n)}
+                  style={[styles.chip, n === max && styles.chipActive]}
+                >
+                  <Text style={[styles.chipText, n === max && styles.chipTextActive]}>{n}杯</Text>
+                </Pressable>
+              ))}
+            </View>
+          ))}
           <Text style={styles.cardNote}>
             {WATER_EVERY}杯ごとに、お水を1杯はさみます。
           </Text>
