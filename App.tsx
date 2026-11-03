@@ -226,7 +226,6 @@ function DrinkingScreen({
             <Text style={[styles.counterBig, { color: accent }]}>{drinks}</Text>
             <Text style={styles.counterSmall}> / {max} 杯</Text>
             {over > 0 && <Text style={styles.counterOver}> +{over}</Text>}
-            <Text style={styles.counterWater}>　💧 {waters}</Text>
           </View>
         </View>
 
@@ -378,7 +377,6 @@ function SlotButton({
 function DoneScreen({ max, filled, onRestart }: { max: number; filled: number; onRestart: () => void }) {
   const seq = useMemo(() => buildSequence(max, Math.max(0, filled - buildSlots(max).length)), [max, filled]);
   const drinks = countKind(seq, filled, 'drink');
-  const waters = countKind(seq, filled, 'water');
   const over = Math.max(0, drinks - max);
 
   return (
@@ -399,19 +397,13 @@ function DoneScreen({ max, filled, onRestart }: { max: number; filled: number; o
               </Text>
             </View>
           ) : (
-            <Text style={styles.doneMain}>自分との約束を{'\n'}守れましたね。</Text>
+            <Text style={styles.doneMain}>自分との約束を{'\n'}守れましたね</Text>
           )}
           <View style={styles.doneStats}>
             <View style={styles.doneStat}>
               <MugIcon size={48} filled danger={over > 0} />
               <Text style={[styles.doneStatText, over > 0 && { color: OVER_ACCENT }]}>
                 {drinks} <Text style={styles.doneStatUnit}>/ {max} 杯</Text>
-              </Text>
-            </View>
-            <View style={styles.doneStat}>
-              <WaterIcon size={48} filled />
-              <Text style={styles.doneStatText}>
-                {waters} <Text style={styles.doneStatUnit}>杯</Text>
               </Text>
             </View>
           </View>
@@ -561,7 +553,6 @@ const styles = StyleSheet.create({
   counterBig: { fontSize: 52, fontWeight: '900' },
   counterSmall: { fontSize: 22, fontWeight: '800', color: INK },
   counterOver: { fontSize: 22, fontWeight: '900', color: OVER_ACCENT },
-  counterWater: { fontSize: 18, fontWeight: '800', color: '#2196C3' },
   messageCard: {
     ...popShadow,
     marginHorizontal: 16,
