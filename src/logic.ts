@@ -31,10 +31,11 @@ export function countKind(slots: Slot[], filled: number, kind: SlotKind): number
 }
 
 /**
- * 上限3〜7杯の固定の段階。[i] は「i+1杯飲み干したとき」の段階（上限到達の手前まで）。
+ * 上限2〜7杯の固定の段階。[i] は「i+1杯飲み干したとき」の段階（上限到達の手前まで）。
  * 1:水色 2:緑 3:黄 4:オレンジ 5:赤
  */
 const FIXED_LEVELS: Record<number, number[]> = {
+  2: [4],
   3: [1, 4],
   4: [1, 3, 4],
   5: [1, 2, 3, 4],
