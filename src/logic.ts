@@ -37,7 +37,7 @@ export function countKind(slots: Slot[], filled: number, kind: SlotKind): number
 const FIXED_LEVELS: Record<number, number[]> = {
   2: [4],
   3: [2, 4],
-  4: [1, 3, 4],
+  4: [1, 2, 4],
   5: [1, 2, 3, 4],
   6: [1, 2, 3, 4, 5],
   7: [1, 2, 2, 3, 4, 5],
