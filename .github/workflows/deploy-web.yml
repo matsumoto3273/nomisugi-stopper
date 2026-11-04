@@ -11,12 +11,15 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  # 2026-11-04: GitHub側で "pages" の実行が終わらず残ったため、別の名前に変更
+  group: pages-deploy
   cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # 万一止まっても、15分で打ち切って次の公開を待たせない
+    timeout-minutes: 15
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
