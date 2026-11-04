@@ -1,5 +1,5 @@
 {
-  "_comment": "効果音の設計図。t:開始秒, d:長さ秒, f:周波数Hz（to があれば to へ滑らかに変化）, v:音量, w:波形。Web版はこれをその場で鳴らし、iOS版は scripts/render-sounds.js で作った wav を鳴らす。",
+  "_comment": "効果音の設計図。t:開始秒, d:長さ秒, f:周波数Hz（to があれば to へ滑らかに変化）, v:音量, w:波形, vib/vc:揺れの速さHz/深さセント。Web版はこれをその場で鳴らし、iOS版は scripts/render-sounds.js で作った wav を鳴らす。",
   "click":   [{ "t": 0, "d": 0.035, "f": 1500, "v": 0.18, "w": "sine" }],
   "start":   [
     { "t": 0.00, "d": 0.12, "f": 523.25, "v": 0.32, "w": "triangle" },

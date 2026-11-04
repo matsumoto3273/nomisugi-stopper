@@ -14,7 +14,8 @@ for (const [name, tones] of Object.entries(spec)) {
     const n = Math.round(t.d * RATE), s0 = Math.round(t.t * RATE);
     for (let i = 0; i < n; i++) {
       const x = i / n;
-      const f = t.to ? t.f * Math.pow(t.to / t.f, x) : t.f; // 周波数を指数的に変化
+      let f = t.to ? t.f * Math.pow(t.to / t.f, x) : t.f; // 周波数を指数的に変化
+      if (t.vib) f *= Math.pow(2, (t.vc * Math.sin(2 * Math.PI * t.vib * (i / RATE))) / 1200); // 揺れ（ビブラート）
       ph += (2 * Math.PI * f) / RATE;
       const env = Math.min(1, i / (0.005 * RATE)) * Math.pow(1 - x, 2); // すっと立ち上がり、なめらかに消える
       buf[s0 + i] += wave(t.w, ph) * t.v * env;

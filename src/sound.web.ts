@@ -5,7 +5,8 @@ import type { SoundName } from './sound';
 
 export type { SoundName };
 
-type Tone = { t: number; d: number; f: number; to?: number; v: number; w: OscillatorType };
+// vib: 揺れの速さ(Hz)、vc: 揺れの深さ(セント)
+type Tone = { t: number; d: number; f: number; to?: number; v: number; w: OscillatorType; vib?: number; vc?: number };
 
 let ctx: AudioContext | null = null;
 
@@ -41,6 +42,16 @@ export function playSound(name: SoundName) {
       gain.gain.setValueAtTime(0.0001, now + t.t);
       gain.gain.exponentialRampToValueAtTime(t.v, now + t.t + 0.005);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + t.t + t.d);
+      if (t.vib && t.vc) {
+        // 揺れ：低い周波数の発振器で音程（detune）を揺らす
+        const lfo = c.createOscillator();
+        const depth = c.createGain();
+        lfo.frequency.value = t.vib;
+        depth.gain.value = t.vc;
+        lfo.connect(depth).connect(osc.detune);
+        lfo.start(now + t.t);
+        lfo.stop(now + t.t + t.d + 0.02);
+      }
       osc.connect(gain).connect(c.destination);
       osc.start(now + t.t);
       osc.stop(now + t.t + t.d + 0.02);
