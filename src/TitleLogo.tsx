@@ -68,9 +68,9 @@ export function HeadingLogo({ text }: { text: string }) {
   );
 }
 
-/** 冒頭画面のタイトル：極太の看板文字（Dela Gothic One）に焦げ茶のフチと影。「飲みすぎ」黄 ×「ストッパー」赤 */
+/** 冒頭画面のタイトル：終了画面の見出しと同じ丸い極太の書体（M PLUS Rounded 1c）。「飲みすぎ」黄 ×「ストッパー」赤 */
 export function TitleLogo() {
-  const fontSize = useFitFontSize(9.2, 44);
+  const fontSize = useFitFontSize(9.6, 44);
   return (
     <OutlinedText
       text="飲みすぎストッパー"
@@ -78,7 +78,7 @@ export function TitleLogo() {
         { text: '飲みすぎ', color: '#FFD23F' },
         { text: 'ストッパー', color: '#E8382F' },
       ]}
-      style={{ fontFamily: 'DelaGothicOne_400Regular', fontSize }}
+      style={{ fontFamily: 'MPLUSRounded1c_900Black', fontSize }}
       outline={INK}
       width={3.5}
       shadow={{ color: INK, dy: 4 }}
