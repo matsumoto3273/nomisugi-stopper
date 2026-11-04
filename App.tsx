@@ -39,8 +39,6 @@ type Saved = { phase: Phase; max: number; filled: number };
 
 const STORAGE_KEY = 'nomisugi-stopper/state-v1';
 const INK = '#3B2A20';
-/** お水のマスに来たときの演出（比較中: ?wv=1〜3） */
-const WATER_VARIANT = Number((globalThis as any).location?.search?.match(/wv=(\d)/)?.[1] ?? 1);
 const WATER_BLUE = '#2196C3';
 /** オーバーして終えたときの見出しの色（くすんだ赤） */
 const OVER_HEADING = '#F4A79D';
@@ -231,7 +229,7 @@ function DrinkingScreen({
     <View style={styles.screen}>
       <WoodBackground />
       {over > 0 && <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: getOverTint(over) }]} />}
-      {waterTime && <WaterTimeOverlay variant={WATER_VARIANT} />}
+      {waterTime && <WaterTimeOverlay />}
       <SafeAreaView style={styles.screen}>
         {/* ヘッダー */}
         <View style={styles.header}>
@@ -330,9 +328,8 @@ function DrinkingScreen({
   );
 }
 
-/** お水のマス：画面全体を水色に寄せる（アラートほど強くない合図） */
-function WaterTimeOverlay({ variant }: { variant: number }) {
-  // ゆっくり明滅させて、気づきやすくする
+/** お水のマス：背景を水色に寄せ、ゆっくり明滅させて知らせる（アラートほど強くない合図） */
+function WaterTimeOverlay() {
   const pulse = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     const loop = Animated.loop(
@@ -344,13 +341,7 @@ function WaterTimeOverlay({ variant }: { variant: number }) {
     loop.start();
     return () => loop.stop();
   }, [pulse]);
-  if (variant === 3) {
-    // 画面のふちを水色に光らせる
-    const borderColor = pulse.interpolate({ inputRange: [0, 1], outputRange: ['rgba(91,192,235,0.55)', 'rgba(91,192,235,0.95)'] });
-    return <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderWidth: 10, borderColor }]} />;
-  }
-  const [lo, hi] = variant === 2 ? [0.45, 0.6] : [0.25, 0.38];
-  const backgroundColor = pulse.interpolate({ inputRange: [0, 1], outputRange: [`rgba(60,165,225,${lo})`, `rgba(60,165,225,${hi})`] });
+  const backgroundColor = pulse.interpolate({ inputRange: [0, 1], outputRange: ['rgba(60,165,225,0.45)', 'rgba(60,165,225,0.6)'] });
   return <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor }]} />;
 }
 
