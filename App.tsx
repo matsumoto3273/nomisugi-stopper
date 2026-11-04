@@ -39,6 +39,8 @@ type Saved = { phase: Phase; max: number; filled: number };
 
 const STORAGE_KEY = 'nomisugi-stopper/state-v1';
 const INK = '#3B2A20';
+/** オーバーして終えたときの見出しの色（候補を比較中） */
+const OVER_HEADING = (globalThis as any).location?.search?.match(/hc=([0-9A-Fa-f]{6})/)?.[1] ? '#' + (globalThis as any).location.search.match(/hc=([0-9A-Fa-f]{6})/)[1] : '#FFF3D6';
 
 async function loadState(): Promise<Saved | null> {
   try {
@@ -380,7 +382,8 @@ function DoneScreen({ max, filled, onRestart }: { max: number; filled: number; o
       <WoodBackground />
       <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.setupContent}>
-        <HeadingLogo text="お疲れ様でした" />
+        {/* 上限以内は「お疲れ様でした」、オーバーしたら「飲みすぎましたね…」 */}
+        <HeadingLogo text={over > 0 ? '飲みすぎましたね…' : 'お疲れ様でした'} color={over > 0 ? OVER_HEADING : undefined} />
         <View style={styles.card}>
           {over > 0 ? (
             <View style={{ alignItems: 'center' }}>

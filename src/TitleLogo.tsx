@@ -55,12 +55,12 @@ function OutlinedText({
 }
 
 /** 終了画面の見出し：丸い極太の書体（M PLUS Rounded 1c）、クリーム白に焦げ茶のフチと影 */
-export function HeadingLogo({ text }: { text: string }) {
+export function HeadingLogo({ text, color = '#FFF3D6' }: { text: string; color?: string }) {
   const fontSize = useFitFontSize(text.length + 0.6, 40);
   return (
     <OutlinedText
       text={text}
-      style={{ fontFamily: 'MPLUSRounded1c_900Black', fontSize, color: '#FFF3D6' }}
+      style={{ fontFamily: 'MPLUSRounded1c_900Black', fontSize, color }}
       outline={INK}
       width={3.5}
       shadow={{ color: INK, dy: 4 }}
