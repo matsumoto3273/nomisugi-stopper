@@ -16,7 +16,7 @@
 - `App.tsx` … 画面（冒頭・飲み会中・終了）
 - `src/logic.ts` … 並び順・段階・文言・色
 - `src/Icons.tsx` … ジョッキとお水のイラスト
-- `src/TitleLogo.tsx` … 冒頭画面のタイトル
+- `src/TitleLogo.tsx` … 冒頭画面のタイトル（Dela Gothic One）と終了画面の見出し（M PLUS Rounded 1c）
 - `src/WoodBackground.tsx` … 木目の背景
 - `assets/icon.png` … アプリのアイコン（ジョッキの中心に半透明の「止まれ」、1024×1024）
 - `public/manifest.json` … ホーム画面から開いたときに全画面（URL欄なし）で表示する設定
@@ -31,6 +31,8 @@ npx tsc --noEmit   # 型チェック
 ```
 
 ## Web版の公開（GitHub Pages）
+
+iOS版を公開するまでの、自分のスマホで試すための版です。
 
 `main` に push すると `.github/workflows/deploy-web.yml` が自動でビルド・公開します。
 

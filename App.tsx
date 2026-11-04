@@ -217,6 +217,8 @@ function DrinkingScreen({
   // 文言の各行が途中で折り返さないよう、画面幅が狭いときだけ文字を小さくする
   const { width: screenWidth } = useWindowDimensions();
   const cardInnerWidth = Math.min(screenWidth * 0.92, 480) - 30;
+  // 終了確認の見出しも、狭い画面で「か？」だけ次の行に落ちないように
+  const modalTitleSize = Math.min(22, Math.floor((Math.min(screenWidth - 48, 380) - 50) / 12));
   const messageFontSize = Math.min(18, Math.floor(cardInnerWidth / Math.max(...message.split('\n').map((l) => l.length))));
 
   return (
@@ -302,7 +304,7 @@ function DrinkingScreen({
 
       {/* 終了確認 */}
       <PopupModal visible={finishModal} onClose={() => setFinishModal(false)}>
-        <Text style={styles.modalTitle}>飲み会を終了しますか？</Text>
+        <Text style={[styles.modalTitle, { fontSize: modalTitleSize }]}>飲み会を終了しますか？</Text>
         <Text style={styles.modalText}>今日は {drinks} 杯で終わりにします。</Text>
         <BigButton
           label="終了する"
