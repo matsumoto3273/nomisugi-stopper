@@ -399,9 +399,14 @@ function DoneScreen({ max, filled, onRestart }: { max: number; filled: number; o
               </View>
             </View>
           )}
-          <Text style={[styles.doneStatText, over > 0 && { color: OVER_ACCENT }]}>
-            {drinks} <Text style={styles.doneStatUnit}>/ {max} 杯</Text>
-          </Text>
+          <View style={styles.doneStats}>
+            <View style={styles.doneStat}>
+              <MugIcon size={48} filled danger={over > 0} />
+              <Text style={[styles.doneStatText, over > 0 && { color: OVER_ACCENT }]}>
+                {drinks} <Text style={styles.doneStatUnit}>/ {max} 杯</Text>
+              </Text>
+            </View>
+          </View>
           <Text style={styles.cardNote}>
             帰ったらお水をもう1杯。{'\n'}気をつけて帰りましょう。
           </Text>
@@ -670,6 +675,8 @@ const styles = StyleSheet.create({
 
   hangingPeriod: { position: 'absolute', left: '100%', top: 0 },
   doneMain: { fontSize: 24, fontWeight: '900', color: INK, textAlign: 'center', lineHeight: 34 },
-  doneStatText: { fontSize: 52, fontWeight: '900', color: INK, lineHeight: 60 },
-  doneStatUnit: { fontSize: 20, fontWeight: '800' },
+  doneStats: { flexDirection: 'row', gap: 28 },
+  doneStat: { alignItems: 'center' },
+  doneStatText: { fontSize: 28, fontWeight: '900', color: INK },
+  doneStatUnit: { fontSize: 15, fontWeight: '800' },
 });
