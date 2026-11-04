@@ -39,7 +39,6 @@ type Saved = { phase: Phase; max: number; filled: number };
 
 const STORAGE_KEY = 'nomisugi-stopper/state-v1';
 const INK = '#3B2A20';
-const WATER_BLUE = '#2196C3';
 /** オーバーして終えたときの見出しの色（くすんだ赤） */
 const OVER_HEADING = '#F4A79D';
 
@@ -182,8 +181,6 @@ function DrinkingScreen({
   const level = getLevel(drinks, max);
   const accent = over > 0 ? OVER_ACCENT : LEVEL_THEMES[level].accent;
   const waterPending = seq[filled]?.kind === 'water';
-  // お水のマスに来たとき（上限以内のみ）は、画面をお水の色に寄せて知らせる
-  const waterTime = over === 0 && waterPending;
   const reachedLimit = filled >= slots.length;
   // 枠は次にタップする空白（＝今飲んでいる1杯。飲み干したらタップ）
   const highlightIndex = filled;
@@ -229,7 +226,6 @@ function DrinkingScreen({
     <View style={styles.screen}>
       <WoodBackground />
       {over > 0 && <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: getOverTint(over) }]} />}
-      {waterTime && <WaterTimeOverlay />}
       <SafeAreaView style={styles.screen}>
         {/* ヘッダー */}
         <View style={styles.header}>
@@ -241,12 +237,11 @@ function DrinkingScreen({
         </View>
 
         {/* 文言 */}
-        <View style={[styles.messageCard, { borderColor: waterTime ? WATER_BLUE : accent }, over > 0 && styles.messageCardOver, waterTime && styles.messageCardWater]}>
+        <View style={[styles.messageCard, { borderColor: accent }, over > 0 && styles.messageCardOver]}>
           <Text
             style={[
               styles.messageText,
               over > 0 && { color: OVER_ACCENT },
-              waterTime && { color: '#11577A' },
               { fontSize: messageFontSize },
             ]}
           >
@@ -326,24 +321,6 @@ function DrinkingScreen({
       </PopupModal>
     </View>
   );
-}
-
-/** お水のマス：画面のふちを水色に光らせ、ゆっくり明滅させて知らせる（アラートほど強くない合図） */
-function WaterTimeOverlay() {
-  const pulse = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulse, { toValue: 1, duration: 1100, useNativeDriver: false }),
-        Animated.timing(pulse, { toValue: 0, duration: 1100, useNativeDriver: false }),
-      ]),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [pulse]);
-  // 木目はそのままに、画面のふちを水色に光らせる
-  const borderColor = pulse.interpolate({ inputRange: [0, 1], outputRange: ['rgba(91,192,235,0.55)', 'rgba(91,192,235,0.95)'] });
-  return <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderWidth: 10, borderColor }]} />;
 }
 
 function SlotButton({
@@ -624,7 +601,6 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1.5 },
     textShadowRadius: 0,
   },
-  messageCardWater: { backgroundColor: '#EAF7FD' },
   messageCardOver: { backgroundColor: '#FFF0EE' },
   overArea: { width: '100%', maxWidth: 480, alignSelf: 'center', marginTop: 16, alignItems: 'center' },
   overLabel: {
