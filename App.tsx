@@ -19,6 +19,7 @@ import { WoodBackground } from './src/WoodBackground';
 import { HeadingLogo, TitleLogo } from './src/TitleLogo';
 import { useFonts } from 'expo-font';
 import { MPLUSRounded1c_900Black } from '@expo-google-fonts/m-plus-rounded-1c/900Black';
+import { DelaGothicOne_400Regular } from '@expo-google-fonts/dela-gothic-one/400Regular';
 
 import {
   buildSequence,
@@ -57,7 +58,7 @@ function saveState(s: Saved) {
 export default function App() {
   const [ready, setReady] = useState(false);
   // タイトル用フォント。読み込みを待たずに画面を出し、読み込めたら差し替わる
-  useFonts({ MPLUSRounded1c_900Black });
+  useFonts({ MPLUSRounded1c_900Black, DelaGothicOne_400Regular });
   const [state, setState] = useState<Saved>({ phase: 'setup', max: 10, filled: 0 });
 
   useEffect(() => {

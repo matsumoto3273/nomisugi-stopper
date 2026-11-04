@@ -54,13 +54,13 @@ function OutlinedText({
   );
 }
 
-/** 終了画面の見出しなど：冒頭のタイトルと同じ書体・フチ・影（黄色） */
+/** 終了画面の見出し：丸い極太の書体（M PLUS Rounded 1c）、クリーム白に焦げ茶のフチと影 */
 export function HeadingLogo({ text }: { text: string }) {
   const fontSize = useFitFontSize(text.length + 0.6, 40);
   return (
     <OutlinedText
       text={text}
-      style={{ fontFamily: 'MPLUSRounded1c_900Black', fontSize, color: '#FFD23F' }}
+      style={{ fontFamily: 'MPLUSRounded1c_900Black', fontSize, color: '#FFF3D6' }}
       outline={INK}
       width={3.5}
       shadow={{ color: INK, dy: 4 }}
@@ -68,9 +68,9 @@ export function HeadingLogo({ text }: { text: string }) {
   );
 }
 
-/** 冒頭画面のタイトル：太い丸文字に焦げ茶のフチと影。「飲みすぎ」黄 ×「ストッパー」赤 */
+/** 冒頭画面のタイトル：極太の看板文字（Dela Gothic One）に焦げ茶のフチと影。「飲みすぎ」黄 ×「ストッパー」赤 */
 export function TitleLogo() {
-  const fontSize = useFitFontSize(9.6, 44);
+  const fontSize = useFitFontSize(9.2, 44);
   return (
     <OutlinedText
       text="飲みすぎストッパー"
@@ -78,7 +78,7 @@ export function TitleLogo() {
         { text: '飲みすぎ', color: '#FFD23F' },
         { text: 'ストッパー', color: '#E8382F' },
       ]}
-      style={{ fontFamily: 'MPLUSRounded1c_900Black', fontSize }}
+      style={{ fontFamily: 'DelaGothicOne_400Regular', fontSize }}
       outline={INK}
       width={3.5}
       shadow={{ color: INK, dy: 4 }}
