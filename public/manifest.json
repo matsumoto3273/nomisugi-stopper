@@ -1,0 +1,23 @@
+{
+  "name": "飲みすぎストッパー",
+  "short_name": "飲みすぎストッパー",
+  "lang": "ja",
+  "start_url": "/nomisugi-stopper/",
+  "scope": "/nomisugi-stopper/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#B97E49",
+  "theme_color": "#B97E49",
+  "icons": [
+    {
+      "src": "/nomisugi-stopper/apple-touch-icon-v2.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/nomisugi-stopper/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

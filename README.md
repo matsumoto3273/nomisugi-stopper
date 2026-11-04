@@ -19,6 +19,7 @@
 - `src/TitleLogo.tsx` … 冒頭画面のタイトル
 - `src/WoodBackground.tsx` … 木目の背景
 - `assets/icon.png` … アプリのアイコン（ジョッキの中心に半透明の「止まれ」、1024×1024）
+- `public/manifest.json` … ホーム画面から開いたときに全画面（URL欄なし）で表示する設定
 - `public/index.html` … Web版のHTMLの雛形（iPhoneのホーム画面用アイコン `public/apple-touch-icon-v2.png`（作り直したらファイル名の番号を上げる：iPhoneが古い画像を使い回すため） を指定）
 
 ## 開発
