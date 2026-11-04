@@ -1,4 +1,10 @@
-import { StyleSheet, Text, TextStyle, View } from 'react-native';
+import { StyleSheet, Text, TextStyle, useWindowDimensions, View } from 'react-native';
+
+/** 画面幅に収まる範囲で、できるだけ大きい文字サイズ（chars: 文字数） */
+function useFitFontSize(chars: number, max: number) {
+  const { width } = useWindowDimensions();
+  return Math.min(max, Math.floor((Math.min(width, 480) - 56) / chars));
+}
 
 const INK = '#3B2A20';
 
@@ -49,7 +55,8 @@ function OutlinedText({
 }
 
 /** 終了画面の見出しなど：冒頭のタイトルと同じ書体・フチ・影（黄色） */
-export function HeadingLogo({ text, fontSize = 30 }: { text: string; fontSize?: number }) {
+export function HeadingLogo({ text }: { text: string }) {
+  const fontSize = useFitFontSize(text.length + 0.6, 40);
   return (
     <OutlinedText
       text={text}
@@ -63,6 +70,7 @@ export function HeadingLogo({ text, fontSize = 30 }: { text: string; fontSize?: 
 
 /** 冒頭画面のタイトル：太い丸文字に焦げ茶のフチと影。「飲みすぎ」黄 ×「ストッパー」赤 */
 export function TitleLogo() {
+  const fontSize = useFitFontSize(9.6, 44);
   return (
     <OutlinedText
       text="飲みすぎストッパー"
@@ -70,7 +78,7 @@ export function TitleLogo() {
         { text: '飲みすぎ', color: '#FFD23F' },
         { text: 'ストッパー', color: '#E8382F' },
       ]}
-      style={{ fontFamily: 'MPLUSRounded1c_900Black', fontSize: 33 }}
+      style={{ fontFamily: 'MPLUSRounded1c_900Black', fontSize }}
       outline={INK}
       width={3.5}
       shadow={{ color: INK, dy: 4 }}

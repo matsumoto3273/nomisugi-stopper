@@ -106,21 +106,22 @@ export default function App() {
 function SetupScreen({ initial, onStart }: { initial: number; onStart: (max: number) => void }) {
   const [max, setMax] = useState(initial);
   const change = (d: number) => setMax((m) => Math.min(MAX_DRINKS, Math.max(MIN_DRINKS, m + d)));
+  // 小さい画面でも説明文が途中で折り返さず、杯数ボタンが4つ1行に並ぶように寸法を合わせる
+  const { width } = useWindowDimensions();
+  const cardInner = Math.min(width, 480) - 40 - 6 - 40;
+  const noteSize = Math.min(14, Math.floor(cardInner / 18.5));
+  const chipWidth = Math.min(72, Math.floor((cardInner - 3 * 8) / 4));
 
   return (
     <View style={styles.screen}>
       <WoodBackground />
       <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.setupContent}>
-        <View style={styles.logoRow}>
-          <MugIcon size={64} filled />
-          <WaterIcon size={56} filled />
-        </View>
         <TitleLogo />
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>本日の最大飲酒量</Text>
-          <Text style={styles.cardNote}>
+          <Text style={[styles.cardNote, { fontSize: noteSize, lineHeight: noteSize * 1.5 }]}>
             これ以上飲むと記憶があいまいになる、{'\n'}二日酔いになる…という目安の杯数は？
           </Text>
 
@@ -139,7 +140,7 @@ function SetupScreen({ initial, onStart }: { initial: number; onStart: (max: num
                 <Pressable
                   key={n}
                   onPress={() => setMax(n)}
-                  style={[styles.chip, n === max && styles.chipActive]}
+                  style={[styles.chip, { width: chipWidth }, n === max && styles.chipActive]}
                 >
                   <Text style={[styles.chipText, n === max && styles.chipTextActive]}>{n}杯</Text>
                 </Pressable>
@@ -377,7 +378,6 @@ function DoneScreen({ max, filled, onRestart }: { max: number; filled: number; o
       <WoodBackground />
       <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.setupContent}>
-        <Text style={styles.doneEmoji}>{over > 0 ? '🌙' : '🎉'}</Text>
         <HeadingLogo text="お疲れ様でした" />
         <View style={styles.card}>
           {over > 0 ? (
@@ -399,14 +399,9 @@ function DoneScreen({ max, filled, onRestart }: { max: number; filled: number; o
               </View>
             </View>
           )}
-          <View style={styles.doneStats}>
-            <View style={styles.doneStat}>
-              <MugIcon size={48} filled danger={over > 0} />
-              <Text style={[styles.doneStatText, over > 0 && { color: OVER_ACCENT }]}>
-                {drinks} <Text style={styles.doneStatUnit}>/ {max} 杯</Text>
-              </Text>
-            </View>
-          </View>
+          <Text style={[styles.doneStatText, over > 0 && { color: OVER_ACCENT }]}>
+            {drinks} <Text style={styles.doneStatUnit}>/ {max} 杯</Text>
+          </Text>
           <Text style={styles.cardNote}>
             帰ったらお水をもう1杯。{'\n'}気をつけて帰りましょう。
           </Text>
@@ -479,12 +474,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-    gap: 20,
+    gap: 28,
     width: '100%',
     maxWidth: 480,
     alignSelf: 'center',
   },
-  logoRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 4 },
   board: {
     ...outline,
     ...popShadow,
@@ -522,8 +516,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: INK,
     borderRadius: 999,
-    paddingHorizontal: 12,
     paddingVertical: 6,
+    alignItems: 'center',
     backgroundColor: '#FFFFFF',
   },
   chipActive: { backgroundColor: INK },
@@ -674,11 +668,8 @@ const styles = StyleSheet.create({
   modalText: { fontSize: 15, color: '#5C4B40', textAlign: 'center', lineHeight: 23 },
   linkText: { fontSize: 15, fontWeight: '800', color: '#5C4B40', textDecorationLine: 'underline' },
 
-  doneEmoji: { fontSize: 56 },
   hangingPeriod: { position: 'absolute', left: '100%', top: 0 },
   doneMain: { fontSize: 24, fontWeight: '900', color: INK, textAlign: 'center', lineHeight: 34 },
-  doneStats: { flexDirection: 'row', gap: 28 },
-  doneStat: { alignItems: 'center' },
-  doneStatText: { fontSize: 28, fontWeight: '900', color: INK },
-  doneStatUnit: { fontSize: 15, fontWeight: '800' },
+  doneStatText: { fontSize: 52, fontWeight: '900', color: INK, lineHeight: 60 },
+  doneStatUnit: { fontSize: 20, fontWeight: '800' },
 });
