@@ -328,7 +328,7 @@ function DrinkingScreen({
   );
 }
 
-/** お水のマス：背景を水色に寄せ、ゆっくり明滅させて知らせる（アラートほど強くない合図） */
+/** お水のマス：画面のふちを水色に光らせ、ゆっくり明滅させて知らせる（アラートほど強くない合図） */
 function WaterTimeOverlay() {
   const pulse = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -341,8 +341,9 @@ function WaterTimeOverlay() {
     loop.start();
     return () => loop.stop();
   }, [pulse]);
-  const backgroundColor = pulse.interpolate({ inputRange: [0, 1], outputRange: ['rgba(60,165,225,0.45)', 'rgba(60,165,225,0.6)'] });
-  return <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor }]} />;
+  // 木目はそのままに、画面のふちを水色に光らせる
+  const borderColor = pulse.interpolate({ inputRange: [0, 1], outputRange: ['rgba(91,192,235,0.55)', 'rgba(91,192,235,0.95)'] });
+  return <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderWidth: 10, borderColor }]} />;
 }
 
 function SlotButton({
