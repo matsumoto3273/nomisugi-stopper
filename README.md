@@ -18,6 +18,8 @@
 - `src/Icons.tsx` … ジョッキとお水のイラスト
 - `src/TitleLogo.tsx` … 冒頭画面のタイトル
 - `src/WoodBackground.tsx` … 木目の背景
+- `assets/icon.png` … アプリのアイコン（ジョッキ＋「止まれ」、1024×1024）
+- `public/index.html` … Web版のHTMLの雛形（iPhoneのホーム画面用アイコン `public/apple-touch-icon.png` を指定）
 
 ## 開発
 
