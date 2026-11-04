@@ -39,8 +39,8 @@ type Saved = { phase: Phase; max: number; filled: number };
 
 const STORAGE_KEY = 'nomisugi-stopper/state-v1';
 const INK = '#3B2A20';
-/** オーバーして終えたときの見出しの色（候補を比較中） */
-const OVER_HEADING = (globalThis as any).location?.search?.match(/hc=([0-9A-Fa-f]{6})/)?.[1] ? '#' + (globalThis as any).location.search.match(/hc=([0-9A-Fa-f]{6})/)[1] : '#FFF3D6';
+/** オーバーして終えたときの見出しの色（くすんだ赤） */
+const OVER_HEADING = '#F4A79D';
 
 async function loadState(): Promise<Saved | null> {
   try {
