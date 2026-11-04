@@ -16,6 +16,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { MugIcon, WaterIcon } from './src/Icons';
 import { WoodBackground } from './src/WoodBackground';
+import { playSound } from './src/sound';
 import { HeadingLogo, TitleLogo } from './src/TitleLogo';
 import { useFonts } from 'expo-font';
 import { MPLUSRounded1c_900Black } from '@expo-google-fonts/m-plus-rounded-1c/900Black';
@@ -107,7 +108,10 @@ export default function App() {
 
 function SetupScreen({ initial, onStart }: { initial: number; onStart: (max: number) => void }) {
   const [max, setMax] = useState(initial);
-  const change = (d: number) => setMax((m) => Math.min(MAX_DRINKS, Math.max(MIN_DRINKS, m + d)));
+  const change = (d: number) => {
+    playSound('click');
+    setMax((m) => Math.min(MAX_DRINKS, Math.max(MIN_DRINKS, m + d)));
+  };
   // 小さい画面でも説明文が途中で折り返さず、杯数ボタンが4つ1行に並ぶように寸法を合わせる
   const { width } = useWindowDimensions();
   const cardInner = Math.min(width, 480) - 40 - 6 - 40;
@@ -141,7 +145,10 @@ function SetupScreen({ initial, onStart }: { initial: number; onStart: (max: num
               {row.map((n) => (
                 <Pressable
                   key={n}
-                  onPress={() => setMax(n)}
+                  onPress={() => {
+                    playSound('click');
+                    setMax(n);
+                  }}
                   style={[styles.chip, { width: chipWidth }, n === max && styles.chipActive]}
                 >
                   <Text style={[styles.chipText, n === max && styles.chipTextActive]}>{n}杯</Text>
@@ -151,7 +158,10 @@ function SetupScreen({ initial, onStart }: { initial: number; onStart: (max: num
           ))}
         </View>
 
-        <BigButton label="飲み会スタート！" color={LEVEL_THEMES[0].accent} onPress={() => onStart(max)} />
+        <BigButton label="飲み会スタート！" color={LEVEL_THEMES[0].accent} onPress={() => {
+            playSound('start');
+            onStart(max);
+          }} />
       </ScrollView>
       </SafeAreaView>
     </View>
@@ -193,19 +203,35 @@ function DrinkingScreen({
 
   const tapSlot = (index: number) => {
     // 埋められるのは次の1つだけ（お水が先なら、お水を埋めるまで次のジョッキには進めない）
-    if (index !== filled) return;
-    onChangeFilled(filled + 1);
+    if (index !== filled) {
+      // まだ押せないジョッキ（お水が先・順番を飛ばした）を押したとき
+      if (index > filled) playSound('locked');
+      return;
+    }
+    const nextFilled = filled + 1;
+    if (seq[filled]?.kind === 'water') playSound('water');
+    else if (nextFilled >= slots.length) playSound('limit'); // 上限ちょうどに到達
+    else {
+      playSound('drink');
+      if (seq[nextFilled]?.kind === 'water') playSound('waterDue'); // 次はお水、の合図
+    }
+    onChangeFilled(nextFilled);
   };
 
   // 上限を超えて追加する（水ロックなし）
-  const addOver = () => onChangeFilled(filled + 1);
+  const addOver = () => {
+    playSound('over');
+    onChangeFilled(filled + 1);
+  };
 
   useEffect(() => {
     if (overItems.length > 0) setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 50);
   }, [overItems.length]);
 
   const undo = () => {
-    if (filled > 0) onChangeFilled(filled - 1);
+    if (filled === 0) return;
+    playSound('undo');
+    onChangeFilled(filled - 1);
   };
 
   let message = getLevelMessage(drinks, max);
@@ -297,7 +323,12 @@ function DrinkingScreen({
               <Text style={styles.subButtonText}>1つ戻す</Text>
             </Pressable>
           </View>
-          <Pressable onPress={() => setFinishModal(true)} style={[styles.finishButton, { backgroundColor: accent }]}>
+          <Pressable
+            onPress={() => {
+              playSound('click');
+              setFinishModal(true);
+            }}
+            style={[styles.finishButton, { backgroundColor: accent }]}>
             <Text style={styles.finishButtonText}>飲み会終了</Text>
           </Pressable>
         </View>
@@ -312,6 +343,7 @@ function DrinkingScreen({
           color={accent}
           onPress={() => {
             setFinishModal(false);
+            playSound(over > 0 ? 'finishOver' : 'finishGood');
             onFinish();
           }}
         />
@@ -416,7 +448,10 @@ function DoneScreen({ max, filled, onRestart }: { max: number; filled: number; o
             帰ったらお水をもう1杯。{'\n'}気をつけて帰りましょう。
           </Text>
         </View>
-        <BigButton label="最初の画面に戻る" color={over > 0 ? OVER_ACCENT : LEVEL_THEMES[2].accent} onPress={onRestart} />
+        <BigButton label="最初の画面に戻る" color={over > 0 ? OVER_ACCENT : LEVEL_THEMES[2].accent} onPress={() => {
+          playSound('click');
+          onRestart();
+        }} />
       </ScrollView>
       </SafeAreaView>
     </View>
