@@ -21,9 +21,9 @@
 - `src/soundSpec.json` … 効果音の設計図（Web版はこれをその場で鳴らす）
 - `src/sound.web.ts` / `src/sound.ts` … 効果音の再生（Web版／iOS版）。どちらもマナーモード中は鳴らない
 - `assets/sounds/` … iOS版用の効果音（`node scripts/render-sounds.js` で設計図から作る）
-- `assets/icon.png` … アプリのアイコン（ジョッキの中心に半透明の「止まれ」、1024×1024）
+- `assets/icon.png` … アプリのアイコン（黄色の背景に、ジョッキと中心に重ねた半透明の「止まれ」、1024×1024）
 - `public/manifest.json` … ホーム画面から開いたときに全画面（URL欄なし）で表示する設定
-- `public/index.html` … Web版のHTMLの雛形（iPhoneのホーム画面用アイコン `public/apple-touch-icon-v2.png`（作り直したらファイル名の番号を上げる：iPhoneが古い画像を使い回すため） を指定）
+- `public/index.html` … Web版のHTMLの雛形（iPhoneのホーム画面用アイコン `public/apple-touch-icon-v3.png`（作り直したらファイル名の番号を上げる：iPhoneが古い画像を使い回すため） を指定）
 
 ## 開発
 
