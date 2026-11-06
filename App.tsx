@@ -408,6 +408,13 @@ function DoneScreen({ max, filled, onRestart }: { max: number; filled: number; o
   const seq = useMemo(() => buildSequence(max, Math.max(0, filled - buildSlots(max).length)), [max, filled]);
   const drinks = countKind(seq, filled, 'drink');
   const over = Math.max(0, drinks - max);
+  const note = over > 0
+    ? '寝る前にお水をたっぷり飲みましょう。\n明日は無理しないでくださいね。'
+    : '帰ったらお水をもう1杯。\n明日もすっきり起きられますね。';
+  // 小さい画面でも各行が途中で折り返さないように
+  const { width } = useWindowDimensions();
+  const cardInner = Math.min(width, 480) - 40 - 6 - 40;
+  const noteSize = Math.min(14, Math.floor(cardInner / (Math.max(...note.split('\n').map((l) => l.length)) + 1)));
 
   return (
     <View style={styles.screen}>
@@ -444,9 +451,7 @@ function DoneScreen({ max, filled, onRestart }: { max: number; filled: number; o
               </Text>
             </View>
           </View>
-          <Text style={styles.cardNote}>
-            帰ったらお水をもう1杯。{'\n'}気をつけて帰りましょう。
-          </Text>
+          <Text style={[styles.cardNote, { fontSize: noteSize, lineHeight: noteSize * 1.5 }]}>{note}</Text>
         </View>
         <BigButton label="最初の画面に戻る" color={over > 0 ? OVER_ACCENT : LEVEL_THEMES[2].accent} onPress={() => {
           playSound('click');
